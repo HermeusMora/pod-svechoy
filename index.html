@@ -189,6 +189,8 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-a
 .choice .rk{color:#9aa4be;font-size:18px;white-space:nowrap}
 .choice .ds{display:block;margin-top:2px;color:#c9c3b2;font-weight:500}
 .choice kbd{color:#9aa4be;margin-right:6px}
+.choices.wait{pointer-events:none;opacity:.55}
+.choices{transition:opacity .3s}
 .shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:calc(var(--px)*5);margin:calc(var(--px)*4) 0 calc(var(--px)*2)}
 .ware{display:flex;flex-direction:column;gap:calc(var(--px)*2);padding:var(--px) calc(var(--px)*3);
   border:calc(var(--px)*4) solid transparent;border-image:var(--frame-sm) 6 fill / calc(var(--px)*6) / calc(var(--px)*1) stretch;image-rendering:pixelated}
@@ -271,7 +273,7 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-a
 .cell .n{position:absolute;right:calc(var(--px)*-2);bottom:calc(var(--px)*-3);font-style:normal;font-size:15px;font-weight:700;color:#f0e2c0;text-shadow:var(--out);line-height:1}
 .cell .q{position:absolute;left:calc(var(--px)*-1);bottom:calc(var(--px)*-3);font-style:normal;font-size:16px;font-weight:700;color:#e8c35a;text-shadow:var(--out);line-height:1}
 .cell kbd{position:absolute;left:calc(var(--px)*-2);top:calc(var(--px)*-3);font-size:13px;color:#9a8e7c;text-shadow:var(--out);line-height:1}
-.cell.lab{width:calc(var(--px)*44);justify-content:space-between;padding:0 calc(var(--px)*2);font-size:18px;font-weight:600;color:#c9c0ae}
+.cell.lab{width:calc(var(--px)*48);justify-content:space-between;padding:0 calc(var(--px)*2);font-size:18px;font-weight:600;color:#c9c0ae}
 .cell.lab i{font-style:normal;font-size:16px;color:#8a7e6c}
 .rrow.on .cell.lab{color:var(--gold2)}
 .rrow.on .cell.lab i{color:#e8c35a}
@@ -415,6 +417,12 @@ body.touch .dpanel{min-height:0}
 .card.chron .cell .n{color:var(--gold2)}
 .card.chron .mfoot{margin-top:calc(var(--px)*4)}
 .cstats{gap:calc(var(--px)*2) calc(var(--px)*10)}
+.card.chron{max-width:880px}
+.card.chron .mp-grid{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}
+.rgrid2{display:grid;grid-auto-flow:column;grid-template-rows:repeat(5,auto);justify-content:center;gap:calc(var(--px)*3) calc(var(--px)*10)}
+.rtot{margin:calc(var(--px)*4) 0 calc(var(--px)*2)!important;text-align:center}
+.card.chron .dpanel{position:static;min-height:calc(var(--px)*46)}
+body.touch .rgrid2{grid-auto-flow:row;grid-template-rows:none;justify-content:start}
 /* ---- the title screen (like Lunacid): the shelter by the fire behind, a column of words on the left ---- */
 body.titled .hud,body.titled .nav,body.titled .log,body.titled .cross,body.titled .prompt,body.titled #touch,body.titled .say,body.titled .bossbar,body.titled .theme,body.titled .lockhint,body.titled .lowhp{display:none!important}
 .title{position:absolute;inset:0;z-index:5;display:none;background:linear-gradient(90deg,rgba(4,3,5,.9) 0,rgba(4,3,5,.6) 34%,rgba(4,3,5,0) 68%)}
@@ -1968,7 +1976,7 @@ const KEEPER = {
   nikita:'Никита снова у очага. Утром он будит весь приют. Я не жалуюсь. Почти.',
 };
 const META_KEY = 'pod-svechoy-meta';
-const defaultMeta = () => ({ash:0, total:0, heroes:['novice'], hero:'novice', up:{}, stats:{runs:0,deaths:0,wins:0,kills:0,champs:0,rescued:0}, runs:[], lastRun:null, keeperSaw:true, visits:0, mem:{}, tal:{}, ach:{}});
+const defaultMeta = () => ({ash:0, total:0, heroes:['novice'], hero:'novice', up:{}, stats:{runs:0,deaths:0,wins:0,kills:0,champs:0,rescued:0}, runs:[], lastRun:null, keeperSaw:true, visits:0, mem:{}, tal:{}, ach:{}, relFound:{}});
 let META = (() => { try{ const m=JSON.parse(store.get(META_KEY,'null')); if(m){ const d=defaultMeta(); return Object.assign(d, m, {stats:Object.assign(d.stats, m.stats||{}), mem:m.mem||{}, tal:m.tal||{}, ach:m.ach||{}}); } }catch(e){} return defaultMeta(); })();
 function saveMeta(){ store.set(META_KEY, JSON.stringify(META)); }
 const mu = id => META.up[id] || 0;
@@ -4076,9 +4084,11 @@ function recalcGear(){
   updateRingsView(); dirty = true;
 }
 // what the hero starts a run with: the relics of the hero (the second once a victory with him opened it), potions dealt anew
+// the chronicle's reliquary: every relic ever found, and how many times (META.relFound, kept across runs)
+function noteRelic(id){ const F = META.relFound || (META.relFound = {}); F[id] = (F[id] || 0) + 1; saveMeta(); }
 function gearStartRun(){
   S.rings = [null, null]; S.neck = null; S.relics = []; S.relSeen = []; S.gearHp = 0; S.buf = {}; S.fl = {};
-  for(const r of INNATE) if(r.hero === S.cls && (!r.ach || META.ach[r.ach])) S.relics.push({id:r.id});
+  for(const r of INNATE) if(r.hero === S.cls && (!r.ach || META.ach[r.ach])){ S.relics.push({id:r.id}); noteRelic(r.id); }
   initPotions();
   if(hasRel('satchel')) S.P.inv.bandage++;
   S.letterPicks = hasRel('letter') ? 2 : 0;
@@ -4147,7 +4157,7 @@ function gearAct(it, a){
     if(old) dropGear('neck', P.x, P.z, {neck:old});
     log(`Вы надеваете: ${NECK_BY[it.neck.id].name.toLowerCase()}.`, 'gold'); SFX.p.pickup();
     if(it.neck.cursed) curseBites(NECK_BY[it.neck.id].harmDesc);
-  } else { const d = RELIC_BY[it.relic]; S.relics.push({id:it.relic}); SFX.p.skill();
+  } else { const d = RELIC_BY[it.relic]; S.relics.push({id:it.relic}); noteRelic(it.relic); SFX.p.skill();
     log(`Реликвия: «${d.name}».${d.set ? ` ${setLine(it.relic)}.` : ''}`, 'gold');
     if(d.cursed) curseBites(d.harmDesc);
     if(d.set && setCount(d.set) === 3) log(`Набор «${RELIC_SETS[d.set].name}» собран: «${RELIC_SETS[d.set].bonus}» — ${RELIC_SETS[d.set].desc}.`, 'gold');
@@ -4454,18 +4464,25 @@ function giveWare(w){
 /* ================= Deal altar ================= */
 let dealOpts = null;
 const dealTxt = v => typeof v === 'function' ? v() : v;   // some prices are counted from the depth and the hero
+const DEAL_BY = Object.fromEntries(DEALS.map(d => [d.id, d]));
 function openAltar(){
-  const P=S.P; dealOpts = DEALS.filter(d=>d.ok(P)).sort(()=>rnd()-.5).slice(0, 3 + mu('mercy') + (hasRel('shard') ? 1 : 0));
+  const P=S.P, A=S.altar;
+  // the offer is made once for the altar and stays: walk away and come back, it is the same (the author changed his mind once and got other deals).
+  // The shuffle follows the seed of the floor, so «Продолжить» does not deal again either
+  if(!A.deals){ const rr = mulberry32(hashStr(S.seed + '#altar#' + S.cycle + '#' + S.depth));
+    A.deals = DEALS.map(d => [rr(), d]).sort((a, b) => a[0] - b[0]).map(x => x[1]).filter(d => d.ok(P)).slice(0, 3 + mu('mercy') + (hasRel('shard') ? 1 : 0)).map(d => d.id); }
+  dealOpts = A.deals.map(id => DEAL_BY[id]).filter(Boolean);
   SFX.p.altar(); setMode('altar');
   const card=$('card'); card.className='card';
+  // a deal you can no longer pay for (the gold went on something else) stays on the list, closed
   card.innerHTML = `<h2>Алтарь сделки</h2><p>Камень тёплый, как живой. Можно заключить одну сделку, после этого алтарь угаснет.</p><div class="choices">` +
-    dealOpts.map((d,i)=>`<button class="choice" data-i="${i}"><span class="top"><b><kbd>${i+1}</kbd>Получить: ${dealTxt(d.get)}</b></span><span class="ds">Цена: ${dealTxt(d.give)}</span></button>`).join('') +
+    dealOpts.map((d,i)=>`<button class="choice" data-i="${i}" ${d.ok(P) ? '' : 'disabled'}><span class="top"><b><kbd>${i+1}</kbd>Получить: ${dealTxt(d.get)}</b>${d.ok(P) ? '' : '<span class="rk">нечем заплатить</span>'}</span><span class="ds">Цена: ${dealTxt(d.give)}</span></button>`).join('') +
     `</div><div class="acts"><button id="altarLeave">Уйти ни с чем</button></div>`;
   card.querySelectorAll('.choice').forEach(b => b.onclick = () => takeDeal(+b.dataset.i));
   $('altarLeave').onclick = () => { dealOpts=null; closeMenu(); };
 }
 function takeDeal(i){
-  const d = dealOpts && dealOpts[i]; if(!d) return;
+  const d = dealOpts && dealOpts[i]; if(!d || !d.ok(S.P)) return;
   const get = dealTxt(d.get), give = dealTxt(d.give);   // before the deal: the prices depend on what the hero has
   d.act(S.P); S.altar.used = true; dealOpts = null; stat('deals');
   log(`Сделка заключена: ${get}. Цена: ${give}.`, 'gold'); SFX.p.altar();
@@ -4473,23 +4490,42 @@ function takeDeal(i){
 }
 
 /* ================= Skills ================= */
-let choosing = null;
+let choosing = null, skillSel = -1, skillLock = 0;
+const skillById = id => SKILLS.find(s => s.id === id) || GENERIC.find(s => s.id === id);
 function openSkills(){
   if(mode!=='play' || S.picks<=0) return;
   // the altar's «навык за навык»: a choice of four skills the hero does not have yet
   // «Письмо наставника»: the first two level-ups of a run offer one skill more
   const fresh = (S.freshPick||0) > 0, nOpt = fresh ? 4 : 3 + mu('fourth') + (S.letterPicks > 0 ? 1 : 0);
-  let avail = skillsFor(S.cls).filter(s => fresh ? !rk(s.id) : rk(s.id) < s.max).sort(()=>rnd()-.5).slice(0,nOpt);
-  if(avail.length<nOpt) avail = avail.concat(GENERIC.slice().sort(()=>rnd()-.5).slice(0,nOpt-avail.length));
-  choosing = avail;
+  // the offer is kept until a skill is taken (or thrown again): «Продолжить» brings back the same three
+  if(!S.offer || S.offer.n !== nOpt || S.offer.fresh !== fresh){
+    let avail = skillsFor(S.cls).filter(s => fresh ? !rk(s.id) : rk(s.id) < s.max).sort(()=>rnd()-.5).slice(0,nOpt);
+    if(avail.length<nOpt) avail = avail.concat(GENERIC.slice().sort(()=>rnd()-.5).slice(0,nOpt-avail.length));
+    S.offer = {n:nOpt, fresh, ids:avail.map(s => s.id)};
+  }
+  choosing = S.offer.ids.map(skillById).filter(Boolean);
   setMode('skills');
   const card=$('card'); card.className='card';
-  card.innerHTML = `<h2>${fresh ? 'Дар алтаря' : `Уровень ${S.P.lvl}`}</h2><p>Выберите один навык из ${['','','двух','трёх','четырёх','пяти'][nOpt] || nOpt}.</p><div class="choices">` +
-    choosing.map((s,i)=>{ const r=rk(s.id); return `<button class="choice${s.hero?' own':''}" data-i="${i}"><span class="top"><b><kbd>${i+1}</kbd>${s.name}</b><span class="rk">${s.hero?'личный навык · ':''}${s.generic?(r?`взято ${r} раз`:'можно брать много раз'):r?`ранг ${r} → ${r+1} из ${s.max}`:(s.max>1?`новый, до ${s.max} рангов`:'новый')}</span></span><span class="ds">${s.desc}</span></button>`; }).join('') + `</div>`;
-  if(S.rerolls>0) card.insertAdjacentHTML('beforeend', `<div class="acts"><button id="reroll">Перебросить (осталось ${S.rerolls})</button></div>`);
-  card.querySelectorAll('.choice').forEach(b => b.onclick = () => chooseSkill(+b.dataset.i));
-  const rr=$('reroll'); if(rr) rr.onclick=()=>{ S.rerolls--; mode='play'; openSkills(); };
+  // the card comes in the middle of a fight, under the cursor and the key of the blow: for a moment it takes nothing,
+  // and then a click only marks a skill — it is taken with «Взять» (or Enter), so a stray click cannot choose
+  card.innerHTML = `<h2>${fresh ? 'Дар алтаря' : `Уровень ${S.P.lvl}`}</h2><p>Выберите один навык из ${['','','двух','трёх','четырёх','пяти'][nOpt] || nOpt}${isTouch ? '' : ' и нажмите «Взять» или Enter'}.</p><div class="choices wait">` +
+    choosing.map((s,i)=>{ const r=rk(s.id); return `<button class="choice${s.hero?' own':''}" data-i="${i}"><span class="top"><b><kbd>${i+1}</kbd>${s.name}</b><span class="rk">${s.hero?'личный навык · ':''}${s.generic?(r?`взято ${r} раз`:'можно брать много раз'):r?`ранг ${r} → ${r+1} из ${s.max}`:(s.max>1?`новый, до ${s.max} рангов`:'новый')}</span></span><span class="ds">${s.desc}</span></button>`; }).join('')
+    + `</div><div class="acts"><button class="main" id="skTake" disabled>Взять</button>${S.rerolls>0 ? `<button id="reroll">Перебросить (осталось ${S.rerolls})</button>` : ''}</div>`;
+  skillSel = -1; skillLock = performance.now() + 700;
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  setTimeout(() => { const c = card.querySelector('.choices.wait'); if(c) c.classList.remove('wait'); }, 700);
+  card.querySelectorAll('.choice').forEach(b => b.onclick = () => markSkill(+b.dataset.i));
+  $('skTake').onclick = takeSkill;
+  const rr=$('reroll'); if(rr) rr.onclick=()=>{ if(performance.now() < skillLock) return; S.rerolls--; S.offer = null; mode='play'; openSkills(); };
 }
+function markSkill(i){
+  if(performance.now() < skillLock || !choosing || !choosing[i]) return;
+  if(skillSel !== i) SFX.p.sel();
+  skillSel = i; const card = $('card');
+  card.querySelectorAll('.choice').forEach(b => b.classList.toggle('on', +b.dataset.i === i));
+  const t = $('skTake'); if(t){ t.disabled = false; t.textContent = `Взять «${choosing[i].name}»`; }
+}
+function takeSkill(){ if(performance.now() < skillLock || skillSel < 0) return; chooseSkill(skillSel); }
 function chooseSkill(i){
   const s = choosing && choosing[i]; if(!s) return;
   S.sk[s.id] = rk(s.id) + 1; stat('picks');
@@ -4500,7 +4536,7 @@ function chooseSkill(i){
   if(s.id==='ember'){ S.ember = (S.ember||0) + 10; }
   log(`Навык: ${s.name.toLowerCase()}${s.generic ? '' : ` (ранг ${S.sk[s.id]})`}.`, 'gold');
   SFX.p.skill();
-  choosing = null; S.picks--; if(S.freshPick > 0) S.freshPick--; else if(S.letterPicks > 0) S.letterPicks--;
+  choosing = null; skillSel = -1; S.offer = null; S.picks--; if(S.freshPick > 0) S.freshPick--; else if(S.letterPicks > 0) S.letterPicks--;
   closeMenu();
 }
 
@@ -4587,11 +4623,17 @@ function showCard(title, paras, kind){
       : kind==='pause' ? `<button class="main" id="ovGo">Продолжить</button><button id="ovSet">Настройки</button>${S.hub?'':'<button id="ovLeave">Покинуть забег</button>'}<button id="ovMenu">Главное меню</button>`
       : kind==='win' ? `<button class="main" id="ovCycle">Спуститься в цикл ${ROMAN(S.cycle+2)}</button><button id="ovHub">Вернуться в приют</button>`
       : `<button class="main" id="ovHub">Вернуться в приют</button>`) + `</div>` + foot;
-  const cyc=$('ovCycle'); if(cyc){ cyc.onclick=()=>{ SFX.init(); startCycle(); closeMenu(); }; cyc.focus({preventScroll:true}); }
-  const go=$('ovGo'); if(go){ go.onclick=()=>{ SFX.init(); SFX.setTheme(S.theme); closeMenu(); }; go.focus({preventScroll:true}); }
+  // death and victory come in the middle of a fight: for a moment the buttons take nothing (a blow on Space or a click must not press
+  // «Вернуться в приют» or «Спуститься в цикл» before the card is read), then the main one gets the focus
+  const hold = kind==='death' || kind==='win', first = () => $('ovCycle') || $('ovGo') || $('ovHub');
+  const cyc=$('ovCycle'); if(cyc) cyc.onclick=()=>{ SFX.init(); startCycle(); closeMenu(); };
+  const go=$('ovGo'); if(go) go.onclick=()=>{ SFX.init(); SFX.setTheme(S.theme); closeMenu(); };
   // out of the catacombs with the amulet: the credits roll, then the shelter
-  const hb=$('ovHub'); if(hb){ hb.onclick = kind==='win' ? ()=>{ SFX.init(); rollCredits(winLines(), ()=>{ enterHub(); closeMenu(); }); } : ()=>{ SFX.init(); enterHub(); closeMenu(); };
-    if(!go && !cyc) hb.focus({preventScroll:true}); }
+  const hb=$('ovHub'); if(hb) hb.onclick = kind==='win' ? ()=>{ SFX.init(); rollCredits(winLines(), ()=>{ enterHub(); closeMenu(); }); } : ()=>{ SFX.init(); enterHub(); closeMenu(); };
+  if(hold){ const bs = [...card.querySelectorAll('.acts button')]; bs.forEach(x => x.disabled = true);
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    setTimeout(() => { if(!card.contains(bs[0])) return; bs.forEach(x => x.disabled = false); const f = first(); if(f) f.focus({preventScroll:true}); }, 900); }
+  else { const f = first(); if(f) f.focus({preventScroll:true}); }
   const st=$('ovSet'); if(st) st.onclick=()=>openSettings('pause');
   const mm=$('ovMenu'); if(mm) mm.onclick=toTitle;
   const lv=$('ovLeave'); if(lv) lv.onclick=askAbandon;
@@ -4642,8 +4684,9 @@ function openHeroes(){
     META.hero=h.id; S.cls=h.id; S.tb=heroBonus(h.id); saveMeta(); SFX.p.skill(); applyHeroView(); rebuildStatues(); openHeroes(); });
 }
 // the chronicle: pages instead of one long scroll (the author's wish) — the totals, the achievements, the last runs; the bestiary will join them
-const CTABS = [['stats', 'Итоги', 'skull'], ['ach', 'Достижения', 'star'], ['runs', 'Забеги', 'stairs']];
-let chronTab = 'stats', chronSel = null;
+const CTABS = [['stats', 'Итоги', 'skull'], ['ach', 'Достижения', 'star'], ['rel', 'Реликварий', 'tabRelics'], ['runs', 'Забеги', 'stairs']];
+let chronTab = 'stats';
+const chronSel = {};
 const CHRON = {
   stats(){
     const st = META.stats, b = getBest(), got = ACH.filter(a => META.ach[a.id]).length;
@@ -4666,6 +4709,17 @@ const CHRON = {
     const cells = ACH.map(a => { const has = !!META.ach[a.id]; return cell('a:' + a.id, a.relic ? 'rel_' + a.relic : 'star', {empty:!has, n:has ? '★' : null}); }).join('');
     return `<div class="mp mp-grid"><div class="cgrid">${cells}</div><div class="dpanel" id="dpanel"></div></div>`;
   },
+  // the reliquary of all runs (as the collection in Isaac): what was ever found is drawn, the rest are silhouettes
+  rel(){
+    const F = META.relFound || {}, rc = id => cell('f:' + id, 'rel_' + id, F[id] ? {} : {ghost:true});
+    const row = (k, name, ids, extra = []) => `<div class="rrow"><button class="cell lab" data-s="${k}"><span>${name}</span><i>${ids.concat(extra).filter(id => F[id]).length}/${ids.length + extra.length}</i></button>`
+      + `${ids.map(rc).join('')}${extra.length ? `<i class="rsep"></i>${extra.map(rc).join('')}` : ''}</div>`;
+    const sets = Object.entries(RELIC_SETS).map(([s, st]) => row('set:' + s, st.name, RELICS.filter(r => r.set === s && !r.cursed).map(r => r.id), RELICS.filter(r => r.set === s && r.cursed).map(r => r.id))).join('');
+    const all = [...RELICS, ...INNATE], got = all.filter(r => F[r.id]).length;
+    // ten rows in two columns, the panel under them: the page must fit a 720-line screen
+    return `<div class="rgrid2">${sets}${row('set:hero', 'Героев', INNATE.filter(r => !r.ach).map(r => r.id))}${row('set:win', 'Победы', INNATE.filter(r => r.ach).map(r => r.id))}${row('set:none', 'Прочие', RELICS.filter(r => !r.set).map(r => r.id))}</div>
+      <p class="small rtot">Найдено за все забеги: ${got} из ${all.length}</p><div class="dpanel" id="dpanel"></div>`;
+  },
   runs(){
     const hn = id => (HEROES.find(h => h.id === id) || HEROES[0]).name;
     return `<ul class="sk">${META.runs.length ? META.runs.map(r => `<li><span>${hn(r.hero)}${r.comp ? ` и ${r.comp}` : ''}: ${r.cycle ? `цикл ${ROMAN(r.cycle+1)}, ` : ''}глубина ${r.depth}, уровень ${r.lvl}, ${r.won ? 'победа' : lc(r.killer || 'гибель')}</span><span>+${r.ash}</span></li>`).join('')
@@ -4677,31 +4731,46 @@ function achPanel(k){
   return dpan(d ? 'rel_' + a.relic : 'star', 'Достижение', a.name, a.desc, has ? 'получено' : pr || (a.soon ? 'пока не выполнить' : 'не получено'), has ? 'on' : 'dim')
     + (d ? `<p class="small">Открывает реликвию «${d.name}»: ${d.desc}</p>` : '');
 }
+// a relic of the reliquary: what it does and how often it was found; its curse shows once it was found
+function relFoundPanel(k){
+  const F = META.relFound || {};
+  if(k === 'set:hero') return dpan('tabRelics', 'Реликвии героев', 'Героев', 'Своя реликвия каждого героя: она с ним с первого спуска.');
+  if(k === 'set:win') return dpan('tabRelics', 'Реликвии героев', 'Победы', 'Вторая реликвия каждого героя: открывается победой над Хранителем этим героем и потом всегда с ним.');
+  if(k === 'set:none') return dpan('tabRelics', 'Реликвии', 'Без набора', 'Редкие находки, которые не входят ни в один набор. Их открывают достижения.');
+  if(k.startsWith('set:')){ const st = RELIC_SETS[k.slice(4)]; return dpan('tabRelics', 'Набор', `«${st.name}»`, `Любые три вещи набора дают бонус «${st.bonus}»: ${st.desc}.`) + '<p class="small">После черты — проклятая вещь набора: она тоже идёт в зачёт.</p>'; }
+  const id = k.slice(2), d = RELIC_BY[id], n = F[id] || 0, a = ACH.find(x => x.relic === id), hero = d.hero && HEROES.find(h => h.id === d.hero);
+  const kind = (hero ? `Реликвия героя · ${hero.name}` : 'Реликвия') + (d.set ? ` · набор «${RELIC_SETS[d.set].name}»` : '') + (n && d.cursed ? ' · проклятая' : '');
+  const text = d.desc + (n && d.cursed ? ` <span class="curse">Проклятие: ${d.harmDesc}.</span>` : '');
+  const sub = n ? `находили ${n} ${n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'раза' : 'раз'}` : 'ещё не находили';
+  return dpan('rel_' + id, kind, d.name, text, sub, n ? '' : 'dim') + (!n && a ? `<p class="small">${META.ach[a.id] ? 'Открыта' : 'Откроется'} достижением «${a.name}»: ${a.desc}</p>` : '');
+}
+const CPANEL = {ach:achPanel, rel:relFoundPanel};
 function chronPick(k, sound){
-  const cells = [...$('card').querySelectorAll('.cell')]; if(!cells.length) return;
-  const c = cells.find(x => x.dataset.s === k) || cells[0]; if(sound && chronSel !== c.dataset.s) SFX.p.sel();
-  chronSel = c.dataset.s; cells.forEach(x => x.classList.toggle('sel', x === c)); $('dpanel').innerHTML = achPanel(chronSel);
+  const cells = [...$('card').querySelectorAll('.cell')]; if(!cells.length || !CPANEL[chronTab]) return;
+  const c = cells.find(x => x.dataset.s === k) || cells.find(x => !x.classList.contains('ghost') && !x.classList.contains('lab')) || cells[0];
+  if(sound && chronSel[chronTab] !== c.dataset.s) SFX.p.sel();
+  chronSel[chronTab] = c.dataset.s; cells.forEach(x => x.classList.toggle('sel', x === c)); $('dpanel').innerHTML = CPANEL[chronTab](c.dataset.s);
 }
 function openChron(tab){
   if(typeof tab !== 'string') tab = null;
   if(tab && tab !== chronTab) SFX.p.sel();
   chronTab = tab || chronTab;
   const card = menuCard('Летопись', `<nav class="mtabs ctabs">${CTABS.map(([id, nm, ic], i) => `<button data-c="${id}" class="${id===chronTab?'on':''}"><img src="${iconURL(ic)}" alt=""><span>${nm}</span>${isTouch?'':`<kbd>${i+1}</kbd>`}</button>`).join('')}</nav>
-    <div class="cbody">${CHRON[chronTab]()}</div>${isTouch ? '' : `<div class="mfoot">${chronTab==='ach' ? '1–3: разделы · стрелки: выбор' : '1–3 или ← →: разделы'} · Esc: уйти</div>`}`, true, '<button id="chBurn">Сжечь летопись</button>');
+    <div class="cbody">${CHRON[chronTab]()}</div>${isTouch ? '' : `<div class="mfoot">${CPANEL[chronTab] ? '1–4: разделы · стрелки: выбор' : '1–4 или ← →: разделы'} · Esc: уйти</div>`}`, true, '<button id="chBurn">Сжечь летопись</button>');
   card.classList.add('chron');
   card.querySelectorAll('.ctabs button').forEach(b => b.onclick = () => openChron(b.dataset.c));
   card.querySelectorAll('.cell').forEach(c => { c.onmouseenter = () => { if(!isTouch) chronPick(c.dataset.s); }; c.onclick = () => chronPick(c.dataset.s, true); });
-  if(chronTab === 'ach') chronPick(chronSel);
+  if(CPANEL[chronTab]) chronPick(chronSel[chronTab]);
   $('chBurn').onclick = askBurn;
 }
 // keys while the chronicle is open (true when the key was its own)
 function chronKey(e){
   if(!$('card').classList.contains('chron')) return false;
-  const i = CTABS.findIndex(t => t[0] === chronTab), m = e.code.match(/^(?:Digit|Numpad)([1-3])$/);
+  const i = CTABS.findIndex(t => t[0] === chronTab), m = e.code.match(/^(?:Digit|Numpad)([1-4])$/);
   if(m){ openChron(CTABS[+m[1]-1][0]); return true; }
   const dir = {ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1]}[e.code]; if(!dir) return false;
   e.preventDefault();
-  if(chronTab === 'ach') navCell(...dir, chronSel, k => chronPick(k, true));
+  if(CPANEL[chronTab]) navCell(...dir, chronSel[chronTab], k => chronPick(k, true));
   else if(dir[0]) openChron(CTABS[(i + dir[0] + CTABS.length) % CTABS.length][0]);
   return true;
 }
@@ -8153,6 +8222,8 @@ function talkMerchant(){
     start: () => ({text: DLG.id ? pick(['«Ещё что-то?»', '«Слушаю.»', '«Ну?»']) : greet, opts: M.angry ? [{t:'Уйти.', end:true}] : [
         {t:'Покажи товар.', end:true, then:openShop},
         {t:'Поговорим по душам. Может, договоримся о цене.', tag:'Задобрить', if:() => !M.persuade, act:() => { M.persuade = {round:0, ok:0, used:{}, say:''}; return 'pers'; }},
+        // walked away in the middle of it: the talk goes on from the same try, with the same words on offer
+        {t:'Вернёмся к разговору о цене.', tag:'Задобрить', if:() => M.persuade && M.persuade.round < 3, go:'pers'},
         {t:'Отдай товар даром, пока цел.', tag:'Угроза', if:() => !M.threat, go:'threat'},
         {t:'Что слышно на этом этаже?', if:() => !flag(fk('rm')), act:() => { once(fk('rm')); return merRumour(); }},
         {t:'Есть что-нибудь… из-под прилавка?', if:() => R.rep >= 2 && !M.secret, act:() => { M.secret = true; M.stock.push(secretWare()); log('Торговец достаёт товар из-под прилавка.', 'gold'); return 'secret'; }},
@@ -8164,9 +8235,11 @@ function talkMerchant(){
     idDone: () => ({text:M.idSaid, opts:back}),
     idPoor: {text:'«Знание стоит денег. У тебя их нет. Приходи богаче.»', opts:back},
     // the persuasion itself: three of the four ways, a new random line for each
-    pers: () => { const P = M.persuade, keys = Object.keys(PERSUADE).sort(() => rnd() - .5).slice(0, 3);
+    // the three ways of a try are dealt once per try and kept (P.offer), so leaving and coming back does not deal them again
+    pers: () => { const P = M.persuade;
+      if(!P.offer || P.offer.round !== P.round){ const keys = Object.keys(PERSUADE).sort(() => rnd() - .5).slice(0, 3); P.offer = {round:P.round, keys, lines:keys.map(k => pick(PERSUADE[k].lines))}; }
       return {text:(P.say ? P.say + '<br>' : '') + nar(P.round ? `Попытка ${P.round + 1} из 3. Удачно: ${P.ok}.` : 'Торговец скрещивает руки и ждёт. У вас три попытки.'),
-        opts:keys.map(k => ({t:pick(PERSUADE[k].lines), tag:PERSUADE[k].tag, act:() => persuadeTry(M, k)}))}; },
+        opts:[...P.offer.keys.map((k, i) => ({t:P.offer.lines[i], tag:PERSUADE[k].tag, act:() => persuadeTry(M, k)})), {t:'Потом договорим.', go:'start'}]}; },
     persDone: () => ({text:`${M.persuade.say}<br>${PERSUADE_END[M.persuade.ok]}`, opts:[{t:'Покажи товар.', end:true, then:openShop}, ...back]}),
     // robbery: a real risk. He may throw you something for free — or refuse to trade at all; either way the rumour goes down with you
     threat: {text:'«Даром? Ты это серьёзно? Подумай ещё раз. Я пережил трёх таких героев, а их мечи продаю тебе же.»', opts:[
@@ -8824,9 +8897,11 @@ document.addEventListener('keydown', e => {
   if(mode==='confirm'){ if(e.code==='Escape' && !e.repeat && confirmBack){ e.preventDefault(); const f = confirmBack; confirmBack = null; f(); } return; }
   if(mode==='pause'){ if(e.code==='Escape' && !e.repeat){ e.preventDefault(); closeMenu(); } return; }
   if(mode==='hubmenu'){ if(chronKey(e)) return; if(e.code==='Escape'||(e.code==='KeyE'&&!e.repeat)){ e.preventDefault(); closeMenu(); } return; }
-  if(mode==='skills'){ const m=e.code.match(/^(?:Digit|Numpad)([1-4])$/); if(m){ e.preventDefault(); chooseSkill(+m[1]-1); } return; }
+  // the skill card: a digit marks a skill, Enter takes it (Space is the blow, so it does nothing here)
+  if(mode==='skills'){ const m=e.code.match(/^(?:Digit|Numpad)([1-5])$/); if(m){ e.preventDefault(); markSkill(+m[1]-1); }
+    else if(e.code==='Enter' || e.code==='NumpadEnter'){ e.preventDefault(); takeSkill(); } else if(e.code==='Space') e.preventDefault(); return; }
   if(mode==='shop'){ if((e.code==='Escape'||e.code==='KeyE') && !e.repeat){ e.preventDefault(); closeMenu(); } return; }
-  if(mode==='altar'){ const m=e.code.match(/^(?:Digit|Numpad)([1-3])$/); if(m){ e.preventDefault(); takeDeal(+m[1]-1); } else if(e.code==='Escape'){ dealOpts=null; closeMenu(); } return; }
+  if(mode==='altar'){ const m=e.code.match(/^(?:Digit|Numpad)([1-5])$/); if(m){ e.preventDefault(); takeDeal(+m[1]-1); } else if(e.code==='Escape'){ dealOpts=null; closeMenu(); } return; }
   if(mode==='talk'){ dlgKey(e); return; }
   if(mode==='menu'){ menuKey(e); return; }
   if(mode==='note'){ noteKey(e); return; }
