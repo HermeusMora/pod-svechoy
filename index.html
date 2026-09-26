@@ -238,40 +238,62 @@ canvas#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-a
 .mbody{flex:1}
 .mfoot{margin-top:calc(var(--px)*5);font-size:17px;color:#a89c8a;text-align:center}
 .mp{display:grid;gap:calc(var(--px)*8);align-items:start}
-.mp-status{grid-template-columns:auto 1fr}
+/* the hero: a doll of slots round the portrait, the stats and the panel beside it */
+.mp-hero{grid-template-columns:auto minmax(0,1fr)}
+.doll{display:flex;gap:calc(var(--px)*4);align-items:center}
+.dcol{display:flex;flex-direction:column;gap:calc(var(--px)*5)}
+.dunder{display:flex;justify-content:center;margin-top:calc(var(--px)*4)}
 .portrait{line-height:0;padding:0;justify-self:start}
 .portrait img{width:calc(var(--px)*80);height:calc(var(--px)*100)}
-.sheet .hname{line-height:0;margin:0 0 calc(var(--px)*3)}
-.sheet .hdesc{margin:0 0 calc(var(--px)*5);font-size:19px;color:#c9c0ae}
+.hside{display:flex;flex-direction:column;gap:calc(var(--px)*4)}
+.hside .hname{display:flex;align-items:center;gap:calc(var(--px)*5);line-height:0}
+.hside .hname span{line-height:1.2;font-size:19px;color:#b8ae9e}
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--px)*2) calc(var(--px)*12)}
 .stat{display:flex;align-items:center;gap:calc(var(--px)*3);padding-bottom:var(--px);border-bottom:var(--px) solid rgba(255,255,255,.07)}
 .stat .lbl{flex:1;color:#b8ae9e}
 .stat b{font-weight:600;color:#f0e2c0;white-space:nowrap}
+.stat em{font-style:normal;font-size:17px}
+.stat em.up,.cmp .up{color:#8ad07a}
+.stat em.dn,.cmp .dn{color:#e0605a}
 .sline{margin-top:calc(var(--px)*6);display:flex;flex-wrap:wrap;gap:calc(var(--px)*4) calc(var(--px)*10);align-items:center}
+.dleft .sline{margin-top:calc(var(--px)*5);max-width:calc(var(--px)*150)}
+.sline:empty{display:none}
 .sline .chip{font-size:19px}
-.slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--px)*5)}
-.slot{display:flex;gap:calc(var(--px)*5);align-items:flex-start;padding:var(--px) calc(var(--px)*3);
+/* cells: an icon in a small frame; gold when chosen, a red line inside when cursed, a violet mark when a pair works */
+.cell{position:relative;flex:none;width:calc(var(--px)*24);height:calc(var(--px)*24);min-height:0;padding:0;display:flex;align-items:center;justify-content:center}
+.cell.sel{border-image-source:var(--frame-gold)}
+.cell.empty .pi{filter:grayscale(1) brightness(.45);opacity:.55}
+.cell.ghost .pi{filter:brightness(0) invert(.26);opacity:.75}
+.cell.bad{box-shadow:inset 0 0 0 var(--px) #e0402a,inset 0 0 0 calc(var(--px)*3) rgba(150,20,10,.5)}
+.cell.pair::after,.cell.wheel::before{content:'';position:absolute;top:calc(var(--px)*-2);width:calc(var(--px)*3);height:calc(var(--px)*3)}
+.cell.pair::after{left:calc(var(--px)*-2);background:#c8a0ff}
+.cell.wheel::before{right:calc(var(--px)*-2);background:var(--gold2)}
+.cell .n{position:absolute;right:calc(var(--px)*-2);bottom:calc(var(--px)*-3);font-style:normal;font-size:15px;font-weight:700;color:#f0e2c0;text-shadow:var(--out);line-height:1}
+.cell .q{position:absolute;left:calc(var(--px)*-1);bottom:calc(var(--px)*-3);font-style:normal;font-size:16px;font-weight:700;color:#e8c35a;text-shadow:var(--out);line-height:1}
+.cell kbd{position:absolute;left:calc(var(--px)*-2);top:calc(var(--px)*-3);font-size:13px;color:#9a8e7c;text-shadow:var(--out);line-height:1}
+.cell.lab{width:calc(var(--px)*44);justify-content:space-between;padding:0 calc(var(--px)*2);font-size:18px;font-weight:600;color:#c9c0ae}
+.cell.lab i{font-style:normal;font-size:16px;color:#8a7e6c}
+.rrow.on .cell.lab{color:var(--gold2)}
+.rrow.on .cell.lab i{color:#e8c35a}
+/* the bag and the relics: cells on the left, the panel on the right */
+.mp-grid{grid-template-columns:minmax(0,11fr) minmax(0,9fr)}
+.cside{display:flex;flex-direction:column;gap:calc(var(--px)*3)}
+.bsec h4{margin:0 0 calc(var(--px)*3);font-size:17px;font-weight:600;color:#9a907e;text-transform:uppercase;letter-spacing:.12em}
+.bsec + .bsec{margin-top:calc(var(--px)*3)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,calc(var(--px)*24));gap:calc(var(--px)*5)}
+.rrow{display:flex;align-items:center;gap:calc(var(--px)*3)}
+.rsep{flex:none;width:var(--px);height:calc(var(--px)*16);margin:0 calc(var(--px)*2);background:rgba(240,210,160,.25)}
+.dpanel{position:sticky;top:calc(var(--px)*2);display:flex;flex-direction:column;gap:calc(var(--px)*3);padding:calc(var(--px)*2) calc(var(--px)*4);min-height:calc(var(--px)*70);
   border:calc(var(--px)*4) solid transparent;border-image:var(--frame-sm) 6 fill / calc(var(--px)*6) / calc(var(--px)*1) stretch;image-rendering:pixelated}
-.slot small{display:block;font-size:16px;color:#9a907e;text-transform:uppercase;letter-spacing:.12em}
-.slot b{display:block;font-size:23px;color:var(--gold2)}
-.slot p{margin:var(--px) 0 0;font-size:18px;color:#c9c0ae}
-.slot.empty{opacity:.45}
-.mp-bag{grid-template-columns:minmax(0,5fr) minmax(0,6fr)}
-.blist{display:flex;flex-direction:column;gap:calc(var(--px)*2)}
-.bitem{display:flex;align-items:center;gap:calc(var(--px)*4);width:100%;text-align:left;padding:0 calc(var(--px)*3) 0 calc(var(--px)*2);font-weight:500}
-.bitem img{flex:none;width:calc(var(--px)*16);height:calc(var(--px)*16)}
-.bitem span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bitem b{color:var(--gold2)}
-.bitem kbd{flex:none;min-width:calc(var(--px)*4);color:#8a8070;font-size:16px}
-.bitem.sel{border-image-source:var(--frame-gold);color:#fff3d0}
-.bitem.none{color:#8a8070}
-.bitem.none img{opacity:.35;filter:grayscale(1)}
-.bdesc{display:flex;flex-direction:column;gap:calc(var(--px)*3);padding:calc(var(--px)*2) calc(var(--px)*4);min-height:calc(var(--px)*64);
-  border:calc(var(--px)*4) solid transparent;border-image:var(--frame-sm) 6 fill / calc(var(--px)*6) / calc(var(--px)*1) stretch;image-rendering:pixelated}
-.bdesc .bh{display:flex;align-items:center;gap:calc(var(--px)*5)}
-.bdesc b{font-size:24px;color:var(--gold2)}
-.bdesc p{margin:0;color:#c9c0ae}
-.bdesc .acts{margin-top:auto}
+.dpanel .dh{display:flex;align-items:center;gap:calc(var(--px)*5)}
+.dpanel small{display:block;font-size:16px;color:#9a907e;text-transform:uppercase;letter-spacing:.1em}
+.dpanel b{display:block;font-size:24px;color:var(--gold2)}
+.dpanel b.dim{color:#a89c8a}
+.dpanel b.curse{color:#e0605a}
+.dpanel b.on{color:#f0d070}
+.dpanel .dh span{display:block;font-size:17px;color:#b8a070}
+.dpanel p{margin:0;color:#c9c0ae}
+.dpanel .acts{margin:auto 0 0}
 .mp-skills{grid-template-columns:1fr 1fr}
 .mp-skills h3{text-align:left;margin-top:calc(var(--px)*2)}
 .abrow{display:flex;gap:calc(var(--px)*5);align-items:flex-start;margin-bottom:calc(var(--px)*5)}
@@ -359,11 +381,19 @@ body.touch .dopts{display:grid;grid-template-columns:1fr 1fr;column-gap:10px}
 body.touch .dopts button{font-size:16px;padding:5px 4px}
 body.touch .dname{top:calc(6px + env(safe-area-inset-top,0px))}
 body.touch .dname small{font-size:14px}
-body.touch .mp-status,body.touch .mp-bag,body.touch .mp-skills,body.touch .slots{grid-template-columns:1fr}
+body.touch .mp-skills{grid-template-columns:1fr}
+/* the phone held sideways: two columns still fit; the page title goes (the lit tab says it), the panel comes before the stats */
+body.touch .mhead .mt{display:none}
+body.touch .mhead{justify-content:center;margin-bottom:calc(var(--px)*4)}
+body.touch .mp{gap:calc(var(--px)*5)}
+body.touch .hside .dpanel{order:1}
+body.touch .hside .stats{order:2}
+body.touch .dpanel{min-height:0}
+@media (max-width:700px){ .mp-hero,.mp-grid{grid-template-columns:1fr} }
 @media (orientation:portrait){ body.touch #wheel{bottom:calc(118px + env(safe-area-inset-bottom,0px))} body.touch .prompt{bottom:calc(250px + env(safe-area-inset-bottom,0px))} }
 @media (max-width:900px){
   .ttree{grid-template-columns:1fr}
-  .mp-status,.mp-skills{grid-template-columns:1fr}
+  .mp-skills{grid-template-columns:1fr}
 }
 /* ---- stage D: the card of a ring, necklace or relic; the relic list in the bag ---- */
 .card.gearcard{max-width:560px}
@@ -374,18 +404,17 @@ body.touch .mp-status,body.touch .mp-bag,body.touch .mp-skills,body.touch .slots
 .curse{color:#e0605a}
 .clean{color:#8ad07a}
 .pair{display:block;margin-top:var(--px);color:#c8a0ff;font-size:17px}
+.gopts{display:flex;flex-direction:column;align-items:flex-start;gap:calc(var(--px)*3);margin:calc(var(--px)*6) 0 calc(var(--px)*3)}
+.gopt{display:flex;align-items:center;flex-wrap:wrap;gap:calc(var(--px)*2) calc(var(--px)*6)}
+.cmp{font-size:19px}
 .ware b{display:flex;align-items:center;gap:calc(var(--px)*3)}
-.rhead{margin:calc(var(--px)*6) 0 calc(var(--px)*3)!important}
-.rlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(var(--px)*3)}
-.relic{display:flex;gap:calc(var(--px)*4);align-items:flex-start;padding:calc(var(--px)*2) calc(var(--px)*3);
-  border:calc(var(--px)*4) solid transparent;border-image:var(--frame-sm) 6 fill / calc(var(--px)*6) / calc(var(--px)*1) stretch}
-.relic b{display:block;color:var(--gold2);font-size:21px}
-.relic small{display:block;color:#b8a070;font-size:16px}
-.relic p{margin:var(--px) 0 0;font-size:17px;color:#c9c0ae}
-.relic.cursed b{color:#e0605a}
-.sk.ach li.has b{color:var(--gold2)}
-.sk.ach .ds{display:block;font-size:16px;color:#b8a070}
-body.touch .rlist{grid-template-columns:1fr}
+/* the chronicle: pages with tabs, one height for all of them */
+.card.chron .ctabs{justify-content:center;margin:0 0 calc(var(--px)*6)}
+.card.chron .cbody{min-height:calc(var(--px)*166)}
+.card.chron .cgrid{align-content:start}
+.card.chron .cell .n{color:var(--gold2)}
+.card.chron .mfoot{margin-top:calc(var(--px)*4)}
+.cstats{gap:calc(var(--px)*2) calc(var(--px)*10)}
 /* ---- the title screen (like Lunacid): the shelter by the fire behind, a column of words on the left ---- */
 body.titled .hud,body.titled .nav,body.titled .log,body.titled .cross,body.titled .prompt,body.titled #touch,body.titled .say,body.titled .bossbar,body.titled .theme,body.titled .lockhint,body.titled .lowhp{display:none!important}
 .title{position:absolute;inset:0;z-index:5;display:none;background:linear-gradient(90deg,rgba(4,3,5,.9) 0,rgba(4,3,5,.6) 34%,rgba(4,3,5,0) 68%)}
@@ -2542,13 +2571,20 @@ function nextLevel(){
       S.treasury = {r}; break;
     }
   }
-  // deal altar on floors 2, 5, 8: tucked into a dead end or a room corner
+  // deal altar on floors 2, 5, 8: in the corner of a room, where no door is. A bend of a corridor also has two walls at a corner,
+  // and an altar there blocked the way (the author met one in the ossuary). Only the caves, with no rooms, take a dead end.
   if(S.depth%3===2 && S.depth<MAXD){
     const O=[[1,0],[-1,0],[0,1],[0,-1]];
-    const ok = c => { const x=c%W, y=(c/W)|0; const w=O.filter(([dx,dy])=>map[(y+dy)*W+x+dx]===0);
-      if(w.length===3) return 2; if(w.length===2 && !(w[0][0]===-w[1][0] && w[0][1]===-w[1][1])) return 1; return 0; };
-    const opts = cells.filter(c=>d0[c]>7 && d0[c]<d0[far]*.9 && !S.reserved.has(c) && !isStairs(c%W,(c/W)|0) && ok(c));
-    const best = opts.filter(c=>ok(c)===2), c = best.length ? pick(best) : opts.length ? pick(opts) : null;
+    const walls = c => { const x=c%W, y=(c/W)|0; const w=O.filter(([dx,dy])=>map[(y+dy)*W+x+dx]===0);
+      return w.length===3 ? 'end' : w.length===2 && !(w[0][0]===-w[1][0] && w[0][1]===-w[1][1]) ? 'corner' : ''; };
+    const base = c => d0[c]>7 && d0[c]!==9999 && d0[c]<d0[far]*.9 && !S.reserved.has(c) && !isStairs(c%W,(c/W)|0)
+      && !(S.merchant && hyp(S.merchant.x-c%W, S.merchant.z-((c/W)|0))<3);
+    const cornerOf = (r, c) => { const x=c%W, y=(c/W)|0; return (x===r.x || x===r.x+r.w-1) && (y===r.y || y===r.y+r.h-1); };
+    const corners = near => rooms ? cells.filter(c => near(c) && walls(c)==='corner' && rooms.some(r => r.w>=3 && r.h>=3 && !(S.treasury && S.treasury.r===r) && cornerOf(r, c))) : [];
+    let inRoom = corners(base);
+    if(!inRoom.length) inRoom = corners(c => d0[c]>3 && d0[c]!==9999 && !S.reserved.has(c) && !isStairs(c%W,(c/W)|0));   // any room corner rather than none
+    const ends = rooms ? [] : cells.filter(c => base(c) && walls(c)==='end');
+    const c = inRoom.length ? pick(inRoom) : ends.length ? pick(ends) : null;
     if(c!==null){ S.altar = {x:c%W, z:(c/W)|0, used:false}; S.reserved.add(c); }
   }
   // the jail: a caged prisoner, guarded by jailers who carry the key
@@ -4049,6 +4085,26 @@ function gearStartRun(){
   recalcGear();
 }
 
+// ---- what changes if you take a thing (as in Diablo): «Атака 8 → 11» in green, «Свет 8 → 7» in red ----
+// The curse of a thing not worn yet stays hidden (the author's choice), so only what it gives is counted; the curse of what you wear is known.
+function thingFx(kind, o){
+  const b = {}, add = fx => { for(const k in fx || {}) b[k] = (b[k]||0) + fx[k]; };
+  if(!o) return b;
+  if(kind === 'ring'){ const d = ringDef(o); if(d.fx) add(d.fx); else { const v = ringVal(o); for(const k of d.keys || [d.key]) b[k] = (b[k]||0) + v; }
+    if(d.cursed && o.known && !o.clean) add(d.harm); }
+  else if(kind === 'neck'){ const d = NECK_BY[o.id]; add(S.cls === 'guard' && d.fxGuard ? d.fxGuard : d.fx); if(d.cursed && o.known && !o.clean) add(d.harm); }
+  else if(!RELIC_BY[o].heroFx) add(RELIC_BY[o].fx);
+  return b;
+}
+const CMP = [['atk', 'Атака', () => atkOf()], ['def', 'Защита', () => defOf()], ['hp', 'Здоровье', () => S.P.maxhp],
+  ['crit', 'Крит', () => .1*rk('crit') + tb('crit'), v => pct(v) + '%'], ['dodge', 'Уклонение', () => .07*rk('dodge') + tb('dodge'), v => pct(v) + '%'], ['light', 'Свет', () => lightRadius()]];
+function cmpLine(put, off){
+  const d = {}; for(const k in put) d[k] = (d[k]||0) + put[k]; for(const k in off) d[k] = (d[k]||0) - off[k];
+  if(d.hpPct) d.hp = (d.hp||0) + Math.round(d.hpPct*(S.P.maxhp - (S.gearHp||0)));
+  const out = CMP.filter(([k]) => d[k] && Math.abs(d[k]) > 1e-6).map(([k, name, cur, f = v => v]) => { const a = cur(); return `<span class="${d[k] > 0 ? 'up' : 'dn'}">${name} ${f(a)} → ${f(a + d[k])}</span>`; });
+  return out.length ? `<span class="cmp">${out.join(' · ')}</span>` : '';
+}
+
 // ---- floor items: a card like a note's; nothing is picked up by just walking over it ----
 const gearLabel = it => it.kind === 'ring' ? 'кольцо' : it.kind === 'neck' ? 'ожерелье' : 'реликвию';
 const dropGear = (kind, x, z, opts = {}) => { const it = {kind, x:x + (rnd()-.5)*.4, z:z + (rnd()-.5)*.4, seen:true};
@@ -4058,20 +4114,23 @@ const dropGear = (kind, x, z, opts = {}) => { const it = {kind, x:x + (rnd()-.5)
 function openGearCard(it){
   setMode('gear'); const card = $('card'); card.className = 'card gearcard';
   let icon, name, look = '', text, btns = '';
-  const slotBtn = (i, lbl, dis) => `<button data-a="ring${i}" ${dis ? 'disabled' : ''}>${lbl}</button>`;
-  if(it.kind === 'ring'){ const r = it.ring; icon = ringIcon(r); name = ringName(r); look = ringLook(r); text = ringText(r);
+  // an option: the button and, beside it, what it changes
+  const opt = (a, lbl, dis, cmp, main) => `<div class="gopt"><button ${main ? 'class="main" ' : ''}data-a="${a}" ${dis ? 'disabled' : ''}>${lbl}</button>${dis ? '' : cmp}</div>`;
+  if(it.kind === 'ring'){ const r = it.ring, put = thingFx('ring', r); icon = ringIcon(r); name = ringName(r); look = ringLook(r); text = ringText(r);
     const free = S.rings.findIndex(x => !x);
     // «Кольцо «Кровавик» III» reads badly: a name that already has quotes goes without new ones
     const qn = o => { const s = ringName(o); return s.includes('«') ? s : `«${s}»`; };
-    if(free >= 0) btns = `<button class="main" data-a="ring${free}">Надеть</button>`;
-    else btns = S.rings.map((o, i) => { const locked = o.cursed && !o.clean; return slotBtn(i, locked ? `${qn(o)} не снять: проклято` : `Надеть вместо: ${qn(o)}`, locked); }).join('');
+    if(free >= 0) btns = opt('ring' + free, 'Надеть', false, cmpLine(put, {}), true);
+    else btns = S.rings.map((o, i) => { const locked = o.cursed && !o.clean; return opt('ring' + i, locked ? `${qn(o)} не снять: проклято` : `Надеть вместо: ${qn(o)}`, locked, cmpLine(put, thingFx('ring', o))); }).join('');
   } else if(it.kind === 'neck'){ const n = it.neck, d = NECK_BY[n.id]; icon = 'neck_' + n.id; name = d.name; look = d.look; text = neckText(n);
     const cur = S.neck, locked = cur && cur.cursed && !cur.clean;
-    btns = `<button class="main" data-a="neck" ${locked ? 'disabled' : ''}>${!cur ? 'Надеть' : locked ? `«${NECK_BY[cur.id].name}» не снять: проклято` : `Надеть вместо «${NECK_BY[cur.id].name}»`}</button>`;
+    btns = opt('neck', !cur ? 'Надеть' : locked ? `«${NECK_BY[cur.id].name}» не снять: проклято` : `Надеть вместо: «${NECK_BY[cur.id].name}»`, locked, cmpLine(thingFx('neck', n), thingFx('neck', cur)), true);
   } else { const d = RELIC_BY[it.relic]; icon = 'rel_' + it.relic; name = d.name; look = d.set ? `набор «${RELIC_SETS[d.set].name}» (у вас ${setCount(d.set)} из 4)` : 'реликвия'; text = relicText(it.relic, false);
-    btns = `<button class="main" data-a="relic">Взять</button>`; }
+    // the third of a set: say what it completes
+    if(d.set && setCount(d.set) === 2) text += ` <span class="pair">С ней соберётся набор: «${RELIC_SETS[d.set].bonus}» — ${RELIC_SETS[d.set].desc}.</span>`;
+    btns = opt('relic', 'Взять', false, cmpLine(thingFx('relic', it.relic), {}), true); }
   card.innerHTML = `<div class="gtop">${icoBox(icon, 40)}<div><h3>${name}</h3><p class="glook">${look}</p></div></div><p class="gtext">${text}</p>
-    <div class="acts">${btns}<button data-a="leave">Оставить</button></div>${isTouch ? '' : '<div class="mfoot">Esc: оставить</div>'}`;
+    <div class="gopts">${btns}<div class="gopt"><button data-a="leave">Оставить</button></div></div>${isTouch ? '' : '<div class="mfoot">Esc: оставить</div>'}`;
   card.querySelectorAll('button[data-a]').forEach(b => b.onclick = () => gearAct(it, b.dataset.a));
   const first = card.querySelector('button[data-a]:not([disabled])'); if(first) first.focus({preventScroll:true});
   SFX.p.page();
@@ -4582,16 +4641,69 @@ function openHeroes(){
     if(b.dataset.a==='buy'){ if(META.ash<h.cost) return; META.ash-=h.cost; META.heroes.push(h.id); log(`${h.name} теперь с вами.`, 'gold'); }
     META.hero=h.id; S.cls=h.id; S.tb=heroBonus(h.id); saveMeta(); SFX.p.skill(); applyHeroView(); rebuildStatues(); openHeroes(); });
 }
-function openChron(){
-  const st=META.stats, b=getBest(), hn=id=>(HEROES.find(h=>h.id===id)||HEROES[0]).name;
-  const runs = META.runs.length ? META.runs.map(r=>`<li><span>${hn(r.hero)}${r.comp?` и ${r.comp}`:''}: ${r.cycle?`цикл ${ROMAN(r.cycle+1)}, `:''}глубина ${r.depth}, уровень ${r.lvl}, ${r.won?'победа':lc(r.killer||'гибель')}</span><span>+${r.ash}</span></li>`).join('') : '<li><span class="muted">Пока пусто.</span></li>';
-  // achievements: the condition, the progress («12 из 30») and the relic it opens
-  const got = ACH.filter(a => META.ach[a.id]).length;
-  const ach = ACH.map(a => { const has = !!META.ach[a.id], pr = achProgress(a);
-    return `<li class="${has ? 'has' : ''}"><span>${has ? '★' : '☆'} <b>${a.name}</b>: ${a.desc}${a.relic ? `<span class="ds">Открывает реликвию «${RELIC_BY[a.relic].name}»</span>` : ''}</span><span>${has ? 'есть' : pr}</span></li>`; }).join('');
-  menuCard('Летопись', `<p>Забегов: ${st.runs}. Побед: ${st.wins}. Гибелей: ${st.deaths}.<br>Врагов повержено: ${st.kills}, хозяев этажей: ${st.champs}, узников спасено: ${st.rescued||0}.<br>Лучший результат: ${b?bestText(b):'пока нет'}. Пепла собрано за всё время: ${META.total}.</p>
-    <p class="sub">Достижения · ${got} из ${ACH.length}</p><ul class="sk ach">${ach}</ul><p class="sub">Последние забеги</p><ul class="sk">${runs}</ul>`, true, '<button id="chBurn">Сжечь летопись</button>');
+// the chronicle: pages instead of one long scroll (the author's wish) — the totals, the achievements, the last runs; the bestiary will join them
+const CTABS = [['stats', 'Итоги', 'skull'], ['ach', 'Достижения', 'star'], ['runs', 'Забеги', 'stairs']];
+let chronTab = 'stats', chronSel = null;
+const CHRON = {
+  stats(){
+    const st = META.stats, b = getBest(), got = ACH.filter(a => META.ach[a.id]).length;
+    const row = (ic, name, val) => `<div class="stat">${icoBox(ic, 12)}<span class="lbl">${name}</span><b>${val}</b></div>`;
+    return `<div class="stats cstats">
+      ${row('stairs', 'Забегов', st.runs)}${row('star', 'Лучший результат', b ? bestText(b) : 'пока нет')}
+      ${row('good', 'Побед', st.wins)}${row('hurt', 'Гибелей', st.deaths)}
+      ${row('star', 'Высший уровень героя', st.maxLvl || 0)}${row('ally', 'Героев открыто', `${META.heroes.length} из ${HEROES.length}`)}
+      ${row('sword', 'Врагов повержено', st.kills)}${row('skull', 'Нежити упокоено', st.undead || 0)}
+      ${row('frenzy', 'Хозяев этажей', st.champs)}${row('cellkey', 'Узников спасено', st.rescued || 0)}
+      ${row('key', 'Сокровищниц открыто', st.vaults || 0)}${row('candle', 'Свечей зажжено', st.candles || 0)}
+      ${row('coin', 'Товаров куплено', st.bought || 0)}${row('gold', 'Золота потрачено', st.spent || 0)}
+      ${row('fire', 'Сделок у алтаря', st.deals || 0)}${row('potion', 'Неопознанных зелий выпито', st.upots || 0)}
+      ${row('tabJournal', 'Записок прочитано', `${(META.notes || []).length} из ${NOTES.length}`)}${row('ash', 'Пепла собрано', META.total)}
+      ${row('tabRelics', 'Достижений', `${got} из ${ACH.length}`)}${row('ash', 'Пепла в приюте', META.ash)}
+    </div>`;
+  },
+  // achievements as medals: the icon is the relic each one opens; dim until earned, a star when earned
+  ach(){
+    const cells = ACH.map(a => { const has = !!META.ach[a.id]; return cell('a:' + a.id, a.relic ? 'rel_' + a.relic : 'star', {empty:!has, n:has ? '★' : null}); }).join('');
+    return `<div class="mp mp-grid"><div class="cgrid">${cells}</div><div class="dpanel" id="dpanel"></div></div>`;
+  },
+  runs(){
+    const hn = id => (HEROES.find(h => h.id === id) || HEROES[0]).name;
+    return `<ul class="sk">${META.runs.length ? META.runs.map(r => `<li><span>${hn(r.hero)}${r.comp ? ` и ${r.comp}` : ''}: ${r.cycle ? `цикл ${ROMAN(r.cycle+1)}, ` : ''}глубина ${r.depth}, уровень ${r.lvl}, ${r.won ? 'победа' : lc(r.killer || 'гибель')}</span><span>+${r.ash}</span></li>`).join('')
+      : '<li><span class="muted">Пока пусто.</span></li>'}</ul>`;
+  },
+};
+function achPanel(k){
+  const a = ACH.find(x => 'a:' + x.id === k) || ACH[0], has = !!META.ach[a.id], pr = achProgress(a), d = a.relic && RELIC_BY[a.relic];
+  return dpan(d ? 'rel_' + a.relic : 'star', 'Достижение', a.name, a.desc, has ? 'получено' : pr || (a.soon ? 'пока не выполнить' : 'не получено'), has ? 'on' : 'dim')
+    + (d ? `<p class="small">Открывает реликвию «${d.name}»: ${d.desc}</p>` : '');
+}
+function chronPick(k, sound){
+  const cells = [...$('card').querySelectorAll('.cell')]; if(!cells.length) return;
+  const c = cells.find(x => x.dataset.s === k) || cells[0]; if(sound && chronSel !== c.dataset.s) SFX.p.sel();
+  chronSel = c.dataset.s; cells.forEach(x => x.classList.toggle('sel', x === c)); $('dpanel').innerHTML = achPanel(chronSel);
+}
+function openChron(tab){
+  if(typeof tab !== 'string') tab = null;
+  if(tab && tab !== chronTab) SFX.p.sel();
+  chronTab = tab || chronTab;
+  const card = menuCard('Летопись', `<nav class="mtabs ctabs">${CTABS.map(([id, nm, ic], i) => `<button data-c="${id}" class="${id===chronTab?'on':''}"><img src="${iconURL(ic)}" alt=""><span>${nm}</span>${isTouch?'':`<kbd>${i+1}</kbd>`}</button>`).join('')}</nav>
+    <div class="cbody">${CHRON[chronTab]()}</div>${isTouch ? '' : `<div class="mfoot">${chronTab==='ach' ? '1–3: разделы · стрелки: выбор' : '1–3 или ← →: разделы'} · Esc: уйти</div>`}`, true, '<button id="chBurn">Сжечь летопись</button>');
+  card.classList.add('chron');
+  card.querySelectorAll('.ctabs button').forEach(b => b.onclick = () => openChron(b.dataset.c));
+  card.querySelectorAll('.cell').forEach(c => { c.onmouseenter = () => { if(!isTouch) chronPick(c.dataset.s); }; c.onclick = () => chronPick(c.dataset.s, true); });
+  if(chronTab === 'ach') chronPick(chronSel);
   $('chBurn').onclick = askBurn;
+}
+// keys while the chronicle is open (true when the key was its own)
+function chronKey(e){
+  if(!$('card').classList.contains('chron')) return false;
+  const i = CTABS.findIndex(t => t[0] === chronTab), m = e.code.match(/^(?:Digit|Numpad)([1-3])$/);
+  if(m){ openChron(CTABS[+m[1]-1][0]); return true; }
+  const dir = {ArrowLeft:[-1,0], ArrowRight:[1,0], ArrowUp:[0,-1], ArrowDown:[0,1]}[e.code]; if(!dir) return false;
+  e.preventDefault();
+  if(chronTab === 'ach') navCell(...dir, chronSel, k => chronPick(k, true));
+  else if(dir[0]) openChron(CTABS[(i + dir[0] + CTABS.length) % CTABS.length][0]);
+  return true;
 }
 // burning the chronicle: all progress is forgotten (the settings stay), and everything starts from the first descent
 function askBurn(){
@@ -4623,96 +4735,169 @@ function goFull(){
   try{ const el=document.documentElement, f=el.requestFullscreen||el.webkitRequestFullscreen; if(f){ const r=f.call(el); if(r && r.then) r.then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(_){} setTimeout(resize,200); }).catch(()=>{}); } }catch(_){}
 }
 /* ---------- the hero menu (Tab): pages like in Lunacid, on marble in the colour of the floor ---------- */
-const MTABS = [['status','Состояние','tabStatus'], ['gear','Снаряжение','tabGear'], ['bag','Сумка','tabBag'], ['skills','Навыки','tabSkills'], ['journal','Дневник','tabJournal']];
-let menuTab = 'status', bagSel = 0;
+// The hero, the bag and the relics are cells with icons and one panel that describes the chosen cell (as in Blasphemous or Dark Souls):
+// the mouse chooses by pointing, the keyboard by the arrows or WASD, the phone by a tap; Q / E and 1–5 turn the pages.
+const MTABS = [['hero','Герой','tabStatus'], ['bag','Сумка','tabBag'], ['relics','Реликвии','tabRelics'], ['skills','Навыки','tabSkills'], ['journal','Дневник','tabJournal']];
+let menuTab = 'hero';
+const menuSel = {hero:'weapon', bag:null, relics:null};
 function openMenu(tab){
   if(!S || S.over || (mode!=='play' && mode!=='menu')) return;
-  if(mode==='play'){ setMode('menu'); SFX.p.page(); const s = selItem(), i = s ? bagItems().findIndex(x => x.k === s.k) : -1; bagSel = i < 0 ? 0 : i; }
+  if(mode==='play'){ setMode('menu'); SFX.p.page(); menuSel.bag = S.selK || null; }
   else if(tab && tab !== menuTab) SFX.p.sel();
   menuTab = tab || menuTab;
   renderMenu();
 }
 const openBag = () => openMenu('bag');
 function renderMenu(){
-  const card = $('card'), gr = (S.theme && S.theme.grade) || HUB_THEME.grade;
+  const card = $('card'), gr = (S.theme && S.theme.grade) || HUB_THEME.grade, cells = !!MPANEL[menuTab];
   card.className = 'card book'; card.style.setProperty('--marble', `url(${marbleArt(gr.tint, gr.shade)})`);
+  const foot = `Tab или Esc: закрыть · Q, E или 1–5: вкладки${cells ? ' · стрелки: выбор' : ''}${menuTab==='bag' ? ' · F: применить' : ''}`;
   card.innerHTML = `<div class="mhead"><div class="mt">${titleHTML(MTABS.find(t => t[0]===menuTab)[1], 15)}</div>
       <nav class="mtabs">${MTABS.map(([id, nm, ic], i) => `<button data-t="${id}" class="${id===menuTab?'on':''}"><img src="${iconURL(ic)}" alt=""><span>${nm}</span>${isTouch?'':`<kbd>${i+1}</kbd>`}</button>`).join('')}</nav></div>
     <div class="mbody">${MPAGES[menuTab]()}</div>
-    ${isTouch ? '<div class="acts"><button class="main" id="mClose">Закрыть</button></div>' : '<div class="mfoot">Tab или Esc: закрыть · ← →: листать вкладки · 1–5: вкладка</div>'}`;
+    ${isTouch ? '<div class="acts"><button class="main" id="mClose">Закрыть</button></div>' : `<div class="mfoot">${foot}</div>`}`;
   card.querySelectorAll('.mtabs button').forEach(b => b.onclick = () => openMenu(b.dataset.t));
   const mc = $('mClose'); if(mc) mc.onclick = closeMenu;
-  if(menuTab==='bag'){
-    card.querySelectorAll('.bitem').forEach(b => { b.onclick = () => bagPick(+b.dataset.i); b.ondblclick = bagUse; });
-    const ub = $('bUse'); if(ub) ub.onclick = bagUse;
-  }
+  card.querySelectorAll('.cell').forEach(c => { c.onmouseenter = () => { if(!isTouch) selectCell(c.dataset.s); }; c.onclick = () => selectCell(c.dataset.s, true);
+    if(menuTab==='bag') c.ondblclick = bagUse; });
+  if(cells) selectCell(menuSel[menuTab]);
 }
-// the bag: the eight usual things, then the unidentified potions of this run
+// a cell: an icon in a small frame; n — a number in the corner, kb — the quick key, empty — an empty slot, ghost — a relic not found yet
+const cell = (k, ic, o = {}) => `<button class="cell${o.empty ? ' empty' : ''}${o.ghost ? ' ghost' : ''}${o.bad ? ' bad' : ''}${o.pair ? ' pair' : ''}${o.wheel ? ' wheel' : ''}" data-s="${k}">${icoBox(ic, 16)}`
+  + `${o.n != null ? `<i class="n">${o.n}</i>` : ''}${o.kb ? `<kbd>${o.kb}</kbd>` : ''}${o.q ? '<i class="q">?</i>' : ''}</button>`;
+// the panel: a big icon, what kind of thing it is, the name, a line under it, then the text
+const dpan = (ic, kind, name, text, sub = '', cls = '') => `<div class="dh">${icoBox(ic, 32)}<div><small>${kind}</small><b class="${cls}">${name}</b>${sub ? `<span>${sub}</span>` : ''}</div></div><p>${text}</p>`;
+function selectCell(k, sound){
+  const cells = [...$('card').querySelectorAll('.cell')]; if(!cells.length) return;
+  const c = cells.find(x => x.dataset.s === k) || cells.find(x => !x.classList.contains('empty') && !x.classList.contains('ghost')) || cells[0];
+  if(sound && menuSel[menuTab] !== c.dataset.s) SFX.p.sel();
+  menuSel[menuTab] = c.dataset.s;
+  cells.forEach(x => x.classList.toggle('sel', x === c));
+  const dp = $('dpanel'); if(!dp) return;
+  dp.innerHTML = MPANEL[menuTab](c.dataset.s);
+  const u = $('bUse'), w = $('bWheel'); if(u) u.onclick = bagUse; if(w) w.onclick = bagWheel;
+}
+// the arrows go to the nearest cell that way (the cells stand in a doll, in a grid or in rows: the layout decides, not a list)
+function navCell(dx, dy, key = menuSel[menuTab], pick = k => selectCell(k, true)){
+  const cells = [...$('card').querySelectorAll('.cell')]; if(!cells.length) return;
+  const cur = cells.find(c => c.dataset.s === key) || cells[0], a = cur.getBoundingClientRect(), ax = a.left + a.width/2, ay = a.top + a.height/2;
+  let best = null, bs = 1e9;
+  for(const c of cells){ if(c === cur) continue; const b = c.getBoundingClientRect(), x = b.left + b.width/2 - ax, y = b.top + b.height/2 - ay;
+    const along = x*dx + y*dy, across = Math.abs(x*dy) + Math.abs(y*dx); if(along <= 4) continue;
+    const s = along + across*2.5; if(s < bs){ bs = s; best = c; } }
+  if(best){ pick(best.dataset.s); best.scrollIntoView({block:'nearest'}); }
+}
+// the bag: the eight usual things, then the unidentified potions of this run, then the keys
 const bagItems = () => [...USABLE, ...upList()];
-function bagPick(i){ const L = bagItems(); bagSel = (i + L.length) % L.length; const u = L[bagSel]; if(S.P.inv[u.k]) S.selK = u.k; SFX.p.sel(); renderMenu(); }
-function bagUse(){ const u = bagItems()[bagSel]; if(!u || !S.P.inv[u.k] || S.hub) return; closeMenu(); useItem(u.k); }
+const BAG_KEYS = {
+  key:{name:'Ключ от сокровищницы', ic:'key', n:P => P.keys, desc:'Поднимает решётку сокровищницы. Ключ носит хозяин этажа.'},
+  cellkey:{name:'Ключ от темницы', ic:'cellkey', n:P => P.cellKey ? 1 : 0, desc:'Отпирает клетку с узником. Ключ носят тюремщики.'},
+  picks:{name:'Отмычки', ic:'lockpick', n:P => P.lockpicks, desc:'Вскрывают решётку сокровищницы без ключа: одна отмычка на решётку.'},
+};
+function bagUse(){ const k = menuSel.bag; if(!bagItems().some(x => x.k === k) || !S.P.inv[k] || S.hub) return; closeMenu(); useItem(k); }
+function bagWheel(){ const k = menuSel.bag; if(!S.P.inv[k]) return; S.selK = k; SFX.p.sel(); dirty = true; refresh(); renderMenu(); }
 function menuKey(e){
   const i = MTABS.findIndex(t => t[0] === menuTab), go = d => openMenu(MTABS[(i + d + MTABS.length) % MTABS.length][0]);
   if(e.code==='Escape' || e.code==='Tab' || (e.code==='KeyI' && menuTab==='bag') || (e.code==='KeyJ' && menuTab==='journal')){ e.preventDefault(); if(!e.repeat) closeMenu(); return; }
   if(e.code==='KeyI'){ openMenu('bag'); return; }
   if(e.code==='KeyJ'){ openMenu('journal'); return; }
-  if(e.code==='ArrowLeft' || e.code==='KeyQ'){ e.preventDefault(); go(-1); return; }
-  if(e.code==='ArrowRight' || e.code==='KeyE'){ e.preventDefault(); go(1); return; }
+  if(e.code==='KeyQ'){ e.preventDefault(); go(-1); return; }
+  if(e.code==='KeyE'){ e.preventDefault(); go(1); return; }
   const m = e.code.match(/^(?:Digit|Numpad)([1-5])$/); if(m){ openMenu(MTABS[+m[1]-1][0]); return; }
-  if(menuTab==='bag'){
-    if(e.code==='ArrowUp' || e.code==='KeyW'){ e.preventDefault(); bagPick(bagSel - 1); }
-    else if(e.code==='ArrowDown' || e.code==='KeyS'){ e.preventDefault(); bagPick(bagSel + 1); }
-    else if(e.code==='Enter' || e.code==='Space' || e.code==='KeyF'){ e.preventDefault(); bagUse(); }
-  }
+  const dir = {ArrowLeft:[-1,0], KeyA:[-1,0], ArrowRight:[1,0], KeyD:[1,0], ArrowUp:[0,-1], KeyW:[0,-1], ArrowDown:[0,1], KeyS:[0,1]}[e.code];
+  // pages without cells: left and right still turn the pages, up and down scroll the journal
+  if(dir){ if(MPANEL[menuTab]){ e.preventDefault(); navCell(...dir); } else if(dir[0]){ e.preventDefault(); go(dir[0]); } return; }
+  if(menuTab==='bag' && (e.code==='Enter' || e.code==='Space' || e.code==='KeyF')){ e.preventDefault(); bagUse(); }
 }
-const MPAGES = {
-  status(){
+// what the panel says about the chosen cell of each page
+const MPANEL = {
+  hero(k){
     const P = S.P, h = heroOf(), C = compAlive();
-    const st = (ic, name, val) => `<div class="stat">${icoBox(ic, 12)}<span class="lbl">${name}</span><b>${val}</b></div>`;
-    const where = S.hub ? 'приют' : `${S.depth===1 ? 'поверхность' : '−'+S.depth} · ${lc(S.theme.name)}`;
-    return `<div class="mp mp-status"><div class="portrait gf"><img src="${heroPortrait(h.id)}" alt="${h.name}"></div><div class="sheet">
-      <div class="hname">${titleHTML(h.name, 15, null, HERO_COL[h.id])}</div><p class="hdesc">${h.desc}</p>
-      <div class="stats">
-        ${st('star', 'Уровень', P.lvl)}${st('sword', 'Атака', atkOf())}
-        ${st('star', 'Опыт', `${P.xp} / ${xpNext(P.lvl)}`)}${st('guard', 'Защита', defOf())}
-        ${st('heart', 'Здоровье', `${Math.max(0, Math.ceil(P.hp))} / ${P.maxhp}`)}${st('coin', 'Золото', P.gold)}
-        ${st('lungs', 'Выносливость', `${Math.round(P.sta)} / ${staMax()}`)}${st('stairs', 'Где', where)}
-        ${st('candle', 'Свеча', P.candle>0 ? Math.ceil(100*P.candle/CANDLE_MAX)+'%' : 'погасла')}${st('skull', 'Повержено', S.kills)}
-        ${st('clock', 'Время забега', mmss(S.time||0))}${S.cycle ? st('ash', 'Цикл', ROMAN(S.cycle+1)) : st('ash', 'Пепел в приюте', META.ash)}
-      </div>
-      <div class="sline">${statusChips()}${C ? chip('ally', `${C.name}, ${C.title}: ${Math.ceil(C.hp)} / ${C.maxhp}`, '#b8e0a8') : ''}</div>
-    </div></div>`;
+    if(k === 'weapon') return dpan(weaponKind(P.weapon.name), 'Оружие', `${P.weapon.name} +${P.weapon.b}`, `С ним атака героя ${atkOf()}. Оружие получше продают торговцы, носят хозяева этажей и хранят сокровищницы.`);
+    if(k === 'armor') return dpan('armor', 'Броня', `${P.armor.name} +${P.armor.b}`, `Защита героя ${defOf()}.`);
+    if(k === 'abil') return dpan(ABIL_ICON[S.cls]||'dash', h.abil.hold ? 'Умение · Q или правая кнопка' : 'Умение · Q', h.abil.name, h.abil.desc);
+    if(k === 'light') return dpan('candle', 'Свет', P.candle>0 ? `Свеча, ${Math.ceil(100*P.candle/CANDLE_MAX)}%` : 'Свеча погасла', `Свет достаёт на ${S.fovR || lightRadius()} клеток. На каждом этаже лежит хотя бы одна новая свеча.`);
+    if(k === 'nikita') return dpan('nikita', 'Под мышкой', 'Никита', 'Бывший парень-врун, ныне петух. Донесите его до конца и выживите.');
+    if(k === 'comp') return C ? dpan('ally', 'Спутник', `${C.name}, ${C.title}`, C.desc, `здоровье ${Math.ceil(C.hp)} / ${C.maxhp}${C.loyal ? ` · верность ${C.loyal > 0 ? '+' : '−'}${Math.abs(C.loyal)}` : ''}`)
+      : dpan('ally', 'Спутник', 'нет', 'Узника можно освободить из темницы на 4–9 глубине или нанять у торговца.', '', 'dim');
+    if(k === 'neck'){ const n = S.neck; if(!n) return dpan('neck_ladanka', 'Ожерелье', 'нет', 'Ожерелье одно, зато сильнее кольца.', '', 'dim');
+      const d = NECK_BY[n.id], bad = n.cursed && !n.clean; return dpan('neck_' + n.id, `Ожерелье${bad ? ' · проклято' : ''}`, d.name, neckText(n), d.look, bad ? 'curse' : ''); }
+    const i = +k.slice(4), r = S.rings && S.rings[i];
+    if(!r) return dpan('ring:iron:none:smooth', `Кольцо ${i+1}`, 'нет', 'Кольца носят хозяева этажей, лежат в сокровищницах, продаются у торговцев.', '', 'dim');
+    const bad = r.cursed && !r.clean;
+    return dpan(ringIcon(r), `Кольцо ${i+1}${bad ? ' · проклято' : ''}`, ringName(r), ringText(r), ringLook(r), bad ? 'curse' : '');
   },
-  gear(){
-    const P = S.P, h = heroOf(), C = compAlive();
-    const slot = (ic, kind, name, desc, empty) => `<div class="slot${empty?' empty':''}">${icoBox(ic, 32)}<div><small>${kind}</small><b>${name}</b>${desc?`<p>${desc}</p>`:''}</div></div>`;
-    const keys = [P.keys ? `ключ от сокровищницы${P.keys>1?' ×'+P.keys:''}` : '', P.cellKey ? 'ключ от темницы' : '', P.lockpicks ? `отмычки ×${P.lockpicks}` : ''].filter(Boolean);
-    return `<div class="slots">
-      ${slot(weaponKind(P.weapon.name), 'Оружие', `${P.weapon.name} +${P.weapon.b}`, `С ним атака героя ${atkOf()}.`)}
-      ${slot('armor', 'Броня', `${P.armor.name} +${P.armor.b}`, `Защита героя ${defOf()}.`)}
-      ${slot(ABIL_ICON[S.cls]||'dash', h.abil.hold ? 'Умение · Q или правая кнопка' : 'Умение · Q', h.abil.name, h.abil.desc)}
-      ${slot('candle', 'Свет', P.candle>0 ? `Свеча, ${Math.ceil(100*P.candle/CANDLE_MAX)}%` : 'Свеча погасла', `Свет достаёт на ${S.fovR || lightRadius()} клеток. На каждом этаже лежит хотя бы одна новая свеча.`)}
-      ${slot('key', 'Ключи', keys.length ? keys.join(', ') : 'нет', keys.length ? '' : 'Ключ от сокровищницы носит хозяин этажа, ключ от темницы — тюремщики.', !keys.length)}
-      ${C ? slot('ally', 'Спутник', `${C.name}, ${C.title}`, `${C.desc} Здоровье ${Math.ceil(C.hp)} / ${C.maxhp}.`) : slot('ally', 'Спутник', 'нет', 'Узника можно освободить из темницы на 4–9 глубине или нанять у торговца.', true)}
-      ${S.nikita ? slot('nikita', 'Под мышкой', 'Никита', 'Бывший парень-врун, ныне петух. Донесите его до конца и выживите.') : ''}
-      ${[0, 1].map(i => { const r = S.rings && S.rings[i]; return r ? slot(ringIcon(r), `Кольцо ${i+1}${r.cursed && !r.clean ? ' · проклято' : ''}`, ringName(r), `${ringText(r)} ${cap(ringLook(r))}.`)
-        : slot('ring:iron:none:smooth', `Кольцо ${i+1}`, 'нет', 'Кольца носят хозяева этажей, лежат в сокровищницах, продаются у торговцев.', true); }).join('')}
-      ${S.neck ? slot('neck_' + S.neck.id, `Ожерелье${S.neck.cursed && !S.neck.clean ? ' · проклято' : ''}`, NECK_BY[S.neck.id].name, neckText(S.neck))
-        : slot('neck_ladanka', 'Ожерелье', 'нет', 'Ожерелье одно, зато сильнее кольца.', true)}
-    </div>`;
-  },
-  bag(){
-    const P = S.P, L = bagItems(); if(bagSel >= L.length) bagSel = 0;
-    const u = L[bagSel] || USABLE[0], n = P.inv[u.k], qi = USABLE.indexOf(u);
+  bag(k){
+    const P = S.P;
+    if(BAG_KEYS[k]){ const d = BAG_KEYS[k], n = d.n(P); return dpan(d.ic, 'Ключи', d.name, d.desc, n > 1 ? `у вас: ${n}` : ''); }
+    const u = bagItems().find(x => x.k === k) || USABLE[0], n = P.inv[u.k] || 0, qi = USABLE.indexOf(u), on = S.selK === u.k;
     const hint = !n ? 'Этого предмета в сумке нет. Его можно найти в сундуках или купить у торговца.'
-      : S.selK === u.k ? `Этот предмет на колесе: ${isTouch ? 'нажмите на середину колеса' : 'F'}, чтобы применить.` : 'Выбранный здесь предмет встаёт на колесо.';
-    // relics: all of them work at once; the set they belong to and how much of it is gathered
-    const rel = (S.relics || []).map(r => { const d = RELIC_BY[r.id]; return `<div class="relic${d.cursed && !r.clean ? ' cursed' : ''}">${icoBox('rel_' + r.id, 28)}<div><b>${d.name}</b>${d.set ? `<small>${setLine(r.id)}${setOn(d.set) ? ` · «${RELIC_SETS[d.set].bonus}»: ${RELIC_SETS[d.set].desc}` : ''}</small>` : d.hero ? '<small>реликвия героя</small>' : ''}<p>${relicText(r.id, true)}</p></div></div>`; }).join('');
-    return `<div class="mp mp-bag"><div class="blist">${L.map((x, i) => `<button class="bitem${i===bagSel?' sel':''}${P.inv[x.k]?'':' none'}" data-i="${i}">${isTouch || i >= USABLE.length ?'':`<kbd>${i+1}</kbd>`}<img src="${iconURL(x.k)}" alt=""><span>${x.name}</span><b>${P.inv[x.k] ? '×'+P.inv[x.k] : ''}</b></button>`).join('')}</div>
-      <div class="bdesc"><div class="bh">${icoBox(u.k, 32)}<div><b>${u.name}</b><br><span class="muted">${n ? `в сумке: ${n}` : 'нет в сумке'}</span></div></div>
-        <p>${u.desc}</p><p class="small">${hint}${isTouch || qi < 0 ? '' : ` Клавиша ${qi+1} применяет его сразу, без колеса.`}</p>
-        <div class="acts"><button class="main" id="bUse" ${n && !S.hub ? '' : 'disabled'}>Применить</button></div></div></div>
-      ${rel ? `<h3 class="rhead">Реликвии</h3><div class="rlist">${rel}</div>` : ''}`;
+      : on ? `Этот предмет на колесе: ${isTouch ? 'нажмите на середину колеса' : 'F'}, чтобы применить.` : 'Кнопка «На колесо» ставит его на колесо предметов.';
+    const kind = u.up ? (S.upot.known[u.k.slice(3)] ? 'Зелье' : 'Неопознанное зелье') : 'Припасы';
+    return dpan(u.k, kind, u.name, u.desc, n ? `в сумке: ${n}` : 'нет в сумке', n ? '' : 'dim')
+      + `<p class="small">${hint}${isTouch || qi < 0 ? '' : ` Клавиша ${qi+1} применяет его сразу, без колеса.`}</p>
+      <div class="acts"><button class="main" id="bUse" ${n && !S.hub ? '' : 'disabled'}>Применить</button><button id="bWheel" ${n && !on ? '' : 'disabled'}>${on ? 'На колесе' : 'На колесо'}</button></div>`;
+  },
+  relics(k){
+    if(k === 'set:none') return dpan('tabRelics', 'Реликвии', 'Без набора', 'Реликвии героя и редкие находки, которые не входят ни в один набор. Все реликвии действуют сразу, надевать их не нужно.');
+    if(k.startsWith('set:')){ const s = k.slice(4), st = RELIC_SETS[s], n = setCount(s);
+      return dpan('tabRelics', 'Набор', `«${st.name}»`, `Любые три вещи набора дают бонус «${st.bonus}»: ${st.desc}.`, `у вас ${Math.min(4, n)} из 4${n >= 3 ? ' · бонус действует' : ''}`, n >= 3 ? 'on' : '')
+        + '<p class="small">Проклятые вещи и реликвии героев тоже идут в зачёт своего набора.</p>'; }
+    const id = k.slice(2), d = RELIC_BY[id], r = (S.relics || []).find(x => x.id === id), bad = r && d.cursed && !r.clean;
+    const kind = (d.hero ? 'Реликвия героя' : 'Реликвия') + (d.set ? ` · набор «${RELIC_SETS[d.set].name}»` : '') + (bad ? ' · проклята' : '');
+    if(r) return dpan('rel_' + id, kind, d.name, relicText(id, true), d.set ? `${setLine(id)}${setOn(d.set) ? ` · бонус «${RELIC_SETS[d.set].bonus}» действует` : ''}` : '', bad ? 'curse' : '');
+    // not found yet: a dark silhouette; what it does is no secret, where it comes from is said
+    const a = ACH.find(x => x.relic === id), locked = a && !META.ach[a.id];
+    return dpan('rel_' + id, kind, d.name, d.desc, locked ? `откроется достижением «${a.name}»` : 'в этом забеге ещё не найдена', 'dim') + (locked ? `<p class="small">${a.desc}</p>` : '');
+  },
+};
+const MPAGES = {
+  // the hero: a doll with the slots round the portrait (the weapon and the first ring in the right hand, the candle and the second ring in the left),
+  // the stats beside it with what the things add (green) or take away (red)
+  hero(){
+    const P = S.P, h = heroOf(), C = compAlive(), g = gearFx();
+    const ring = i => { const r = S.rings && S.rings[i]; return r ? cell('ring' + i, ringIcon(r), {bad:r.cursed && !r.clean}) : cell('ring' + i, 'ring:iron:none:smooth', {empty:true}); };
+    const left = [cell('weapon', weaponKind(P.weapon.name)), ring(0), cell('armor', 'armor'), cell('abil', ABIL_ICON[S.cls]||'dash')];
+    const right = [cell('light', 'candle', {n:P.candle>0 ? Math.ceil(100*P.candle/CANDLE_MAX) + '%' : null, empty:P.candle<=0}), ring(1),
+      S.neck ? cell('neck', 'neck_' + S.neck.id, {bad:S.neck.cursed && !S.neck.clean}) : cell('neck', 'neck_ladanka', {empty:true}), cell('comp', 'ally', {empty:!C})];
+    const dl = (v, f = x => x) => v ? ` <em class="${v > 0 ? 'up' : 'dn'}">${v > 0 ? '+' : '−'}${f(Math.abs(v))}</em>` : '';
+    const st = (ic, name, val, d = '') => `<div class="stat">${icoBox(ic, 12)}<span class="lbl">${name}</span><b>${val}${d}</b></div>`;
+    const where = S.hub ? 'приют' : `${S.depth===1 ? 'поверхность' : '−'+S.depth} · ${lc(S.theme.name)}`, pc = v => v + '%';
+    const crit = .1*rk('crit') + tb('crit'), dodge = .07*rk('dodge') + tb('dodge');
+    return `<div class="mp mp-hero"><div class="dleft"><div class="doll"><div class="dcol">${left.join('')}</div>
+        <div class="portrait gf"><img src="${heroPortrait(h.id)}" alt="${h.name}"></div><div class="dcol">${right.join('')}</div></div>
+        ${S.nikita ? `<div class="dunder">${cell('nikita', 'nikita')}</div>` : ''}<div class="sline">${statusChips(true)}</div></div>
+      <div class="hside"><div class="hname">${titleHTML(h.name, 15, null, HERO_COL[h.id])}<span>ур. ${P.lvl}${S.cycle ? ` · цикл ${ROMAN(S.cycle+1)}` : ''}</span></div>
+        <div class="stats">
+          ${st('heart', 'Здоровье', `${Math.max(0, Math.ceil(P.hp))} / ${P.maxhp}`, dl(S.gearHp||0))}${st('sword', 'Атака', atkOf(), dl(g.atk||0))}
+          ${st('lungs', 'Выносливость', `${Math.round(P.sta)} / ${staMax()}`)}${st('guard', 'Защита', defOf(), dl(g.def||0))}
+          ${st('star', 'Опыт', `${P.xp} / ${xpNext(P.lvl)}`)}${st('frenzy', 'Крит', pc(pct(crit)), dl(pct(g.crit||0), pc))}
+          ${st('candle', 'Свет', `${S.fovR || lightRadius()} кл.`, dl(g.light||0))}${st('shadow', 'Уклонение', pc(pct(dodge)), dl(pct(g.dodge||0), pc))}
+          ${st('coin', 'Золото', P.gold)}${st('skull', 'Повержено', S.kills)}
+          ${st('stairs', 'Где', where)}${st('clock', 'Время', mmss(S.time||0))}
+        </div>
+        <div class="dpanel" id="dpanel"></div></div></div>`;
+  },
+  // the bag: a grid; the number in the corner is how many, the small one on top is the quick key, the gold mark is what is on the wheel
+  bag(){
+    const P = S.P, sec = (t, c) => c ? `<section class="bsec"><h4>${t}</h4><div class="cgrid">${c}</div></section>` : '';
+    const use = USABLE.map((u, i) => cell(u.k, u.k, {n:P.inv[u.k] ? '×' + P.inv[u.k] : null, empty:!P.inv[u.k], kb:isTouch ? null : i+1, wheel:S.selK === u.k})).join('');
+    const ups = upList().map(u => cell(u.k, u.k, {n:'×' + P.inv[u.k], q:!S.upot.known[u.k.slice(3)], wheel:S.selK === u.k})).join('');
+    const keys = Object.entries(BAG_KEYS).filter(([, d]) => d.n(P)).map(([k, d]) => cell(k, d.ic, {n:d.n(P) > 1 ? '×' + d.n(P) : null})).join('');
+    return `<div class="mp mp-grid"><div class="cside">${sec('Припасы', use)}${sec('Зелья', ups)}${sec('Ключи', keys)}</div><div class="dpanel" id="dpanel"></div></div>`;
+  },
+  // the relics: a row for every set — the four of it, not found ones as dark silhouettes (you see what to look for); cursed and hero relics of the set after them
+  relics(){
+    const own = new Map((S.relics || []).map(r => [r.id, r]));
+    const paired = id => RELIC_PAIRS.some(([a, b]) => (a === id || b === id) && own.has(a) && own.has(b));
+    const rc = id => { const d = RELIC_BY[id], r = own.get(id); return cell('r:' + id, 'rel_' + id, r ? {bad:d.cursed && !r.clean, pair:paired(id)} : {ghost:true}); };
+    const row = (k, name, cnt, on, main, extra) => `<div class="rrow${on ? ' on' : ''}"><button class="cell lab" data-s="${k}"><span>${name}</span>${cnt}</button>`
+      + `${main.map(rc).join('')}${extra.length ? `<i class="rsep"></i>${extra.map(rc).join('')}` : ''}</div>`;
+    const sets = Object.entries(RELIC_SETS).map(([s, st]) => { const main = RELICS.filter(r => r.set === s && !r.cursed).map(r => r.id);
+      return row('set:' + s, st.name, `<i>${Math.min(4, setCount(s))}/4</i>`, setOn(s), main, [...own.keys()].filter(id => RELIC_BY[id].set === s && !main.includes(id))); }).join('');
+    const lone = RELICS.filter(r => !r.set).map(r => r.id);
+    return `<div class="mp mp-grid"><div class="cside">${sets}${row('set:none', 'Прочие', '', false, lone, [...own.keys()].filter(id => !RELIC_BY[id].set && !lone.includes(id)))}</div>
+      <div class="dpanel" id="dpanel"></div></div>`;
   },
   skills(){
     const h = heroOf(), sk = SKILLS.concat(GENERIC).filter(x => rk(x.id)), tals = (TALENTS[S.cls]||[]).filter(t => talRank(S.cls, t.id));
@@ -7600,6 +7785,8 @@ const ICON_ART = {
   tabGear: () => sprite(16, 16, P => { P.line(2, 14, 13, 3, '#c8ccd4', 2); P.rect(8, 6, 14, 12, '#6a5038'); P.tri(8, 12, 14, 12, 11, 15, '#6a5038'); }),
   tabBag: () => sprite(16, 16, P => { P.rect(2, 5, 13, 14, '#7a5230'); P.rect(2, 5, 13, 8, '#5a3a20'); P.line(5, 5, 7, 1, '#5a3a20', 1); P.line(10, 5, 8, 1, '#5a3a20', 1); P.px(7, 7, '#c8983a'); }),
   tabSkills: () => sprite(16, 16, P => { P.rect(1, 3, 7, 13, '#d8c89a'); P.rect(8, 3, 14, 13, '#c8b88a'); P.rect(7, 3, 8, 14, '#6a1818'); for(const y of [5, 7, 9]){ P.line(2, y, 6, y, '#6a5a3a', 1); P.line(9, y, 13, y, '#6a5a3a', 1); } }),
+  tabRelics: () => sprite(16, 16, P => { P.tri(2, 7, 13, 7, 7.5, 3, '#b88a3a'); P.rect(2, 7, 13, 14, '#a07a34'); P.rect(2, 7, 13, 8, '#d8b050'); P.rect(2, 13, 13, 14, '#6a4a20');
+    P.rect(7, 0, 8, 4, '#e8c860'); P.rect(6, 1, 9, 2, '#e8c860'); P.rect(6, 9, 9, 12, '#5a1a1a'); P.px(7, 10, '#e05a4a'); }),
   tabJournal: () => sprite(16, 16, P => { P.rect(2, 3, 11, 14, '#d8c89a'); for(const y of [5, 7, 9, 11]) P.line(3, y, 9, y, '#8a7a5a', 1); P.line(13, 1, 8, 12, '#e8e0d0', 1); P.line(14, 1, 12, 5, '#ffffff', 1); }),
 };
 const ABIL_ICON = {novice:'dash', thief:'shadow', guard:'shield', priest:'flare', doctor:'cloud', possessed:'frenzy'};
@@ -8534,10 +8721,11 @@ function drawNotes(){
 }
 // states as small icons with seconds left
 const chip = (ic, txt, col) => `<span class="chip" style="--c:${col}">${ico(ic)}${txt}</span>`;
-function statusChips(){
+// noNik: the hero menu has Nikita in a cell of his own
+function statusChips(noNik){
   const P = S.P;
   return (P.blocking ? chip('guard', 'Щит', '#cfd8c0') : '') + (shadowOn() ? chip('shadow', 'Тень', '#b8a0ff') : '') + (frenzyOn() ? chip('frenzy', 'Ярость', '#ff6a4a') : '')
-    + (P.fireImm > S.time ? chip('wet', `Мокрый ${Math.ceil(P.fireImm - S.time)}с`, '#6ab8e8') : '') + (S.nikita ? chip('nikita', 'Никита', '#ff9a3a') : '')
+    + (P.fireImm > S.time ? chip('wet', `Мокрый ${Math.ceil(P.fireImm - S.time)}с`, '#6ab8e8') : '') + (S.nikita && !noNik ? chip('nikita', 'Никита', '#ff9a3a') : '')
     + Object.keys(P.st).map(k => chip(k, `${STATUS[k].name} ${Math.ceil(P.st[k].t)}с`, STATUS[k].col)).join('') + buffChips();
 }
 // what the potions of this run are doing to you, and the smoke of the relics
@@ -8635,7 +8823,7 @@ document.addEventListener('keydown', e => {
   if(mode==='settings'){ if(e.code==='Escape' && !e.repeat){ e.preventDefault(); settingsBack(); } return; }
   if(mode==='confirm'){ if(e.code==='Escape' && !e.repeat && confirmBack){ e.preventDefault(); const f = confirmBack; confirmBack = null; f(); } return; }
   if(mode==='pause'){ if(e.code==='Escape' && !e.repeat){ e.preventDefault(); closeMenu(); } return; }
-  if(mode==='hubmenu'){ if(e.code==='Escape'||(e.code==='KeyE'&&!e.repeat)){ e.preventDefault(); closeMenu(); } return; }
+  if(mode==='hubmenu'){ if(chronKey(e)) return; if(e.code==='Escape'||(e.code==='KeyE'&&!e.repeat)){ e.preventDefault(); closeMenu(); } return; }
   if(mode==='skills'){ const m=e.code.match(/^(?:Digit|Numpad)([1-4])$/); if(m){ e.preventDefault(); chooseSkill(+m[1]-1); } return; }
   if(mode==='shop'){ if((e.code==='Escape'||e.code==='KeyE') && !e.repeat){ e.preventDefault(); closeMenu(); } return; }
   if(mode==='altar'){ const m=e.code.match(/^(?:Digit|Numpad)([1-3])$/); if(m){ e.preventDefault(); takeDeal(+m[1]-1); } else if(e.code==='Escape'){ dealOpts=null; closeMenu(); } return; }
@@ -8648,7 +8836,7 @@ document.addEventListener('keydown', e => {
   if(e.code==='Escape' || e.code==='KeyP'){ openPause(); return; }
   if(e.code==='KeyE'){ if(!e.repeat) interact(); return; }
   if(e.code==='KeyM'){ bigOn=true; bigT=0; return; }
-  if(e.code==='Tab'){ e.preventDefault(); if(!e.repeat) openMenu('status'); return; }
+  if(e.code==='Tab'){ e.preventDefault(); if(!e.repeat) openMenu('hero'); return; }
   if(e.code==='KeyI'){ if(!e.repeat) openMenu('bag'); return; }
   if(e.code==='KeyJ'){ if(!e.repeat) openMenu('journal'); return; }
   if(e.code==='KeyF'){ if(!e.repeat) useSel(); return; }
@@ -8699,7 +8887,7 @@ $('tUse').addEventListener('click', e => { e.stopPropagation(); interact(); });
 $('tPause').addEventListener('click', e => { e.stopPropagation(); openPause(); });
 $('tSkill').addEventListener('pointerdown', e => { e.stopPropagation(); if(S.cls==='guard') blockHeld=true; else useAbility(); });
 ['pointerup','pointercancel','pointerleave'].forEach(ev=>$('tSkill').addEventListener(ev, () => { blockHeld=false; }));
-$('tBag').addEventListener('click', e => { e.stopPropagation(); openMenu('status'); });
+$('tBag').addEventListener('click', e => { e.stopPropagation(); openMenu('hero'); });
 // on the phone the item wheel sits at the bottom: tap its edges to turn it, the middle to use the item
 $('wheel').addEventListener('pointerdown', e => {
   if(!isTouch || mode!=='play') return; e.stopPropagation(); e.preventDefault();
