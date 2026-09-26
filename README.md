@@ -30,6 +30,7 @@ F11 или Alt+Enter в программе: полный экран.
 | Набор | Автор | Лицензия |
 |---|---|---|
 | [PSX Dungeon Boxes and Barrels Pack](https://mcsteeg.itch.io/psx-dungeon-boxes-and-barrels-pack) (ящики, бочки, сундук) | MCSTEEG | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| [PSX Style Modular Low Poly Dungeon](https://blendervoyage.itch.io/psx-style-modular-low-poly-dungeon), [PSX Style Modular Low Poly Graveyard](https://blendervoyage.itch.io/psx-style-low-poly-modular-graveyard) (книги, гроб, надгробия) | BlenderVoyage | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
 | [PS1 Medieval Weapons](https://opengameart.org/content/ps1-medieval-weapons-sword-spear-shield-and-mace) | Cassie-OrbitGames | CC0 |
 | [3D Retro Medieval/Fantasy Building Kit](https://chilly-durango.itch.io/medieval-building-parts) | chilly_durango | CC0 |
 | [Tiny Texture Pack 2](https://screamingbrainstudios.itch.io/tiny-texture-pack-2) | Screaming Brain Studios | CC0 |
