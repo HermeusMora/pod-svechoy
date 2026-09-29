@@ -2867,6 +2867,8 @@ function spawnGold(x,z,amt){ items.push({kind:'gold', name:'Золото', amt, 
 function dropUse(k, x, z){ items.push({kind:'use', k, name:useName(k), x:x+(rnd()-.5)*.4, z:z+(rnd()-.5)*.4, seen:true}); }
 function killMonster(m, msg){
   if(!monsters.includes(m)) return;
+  // your own raised skeleton (a trap, a champion's blast): it just falls apart — no kill, no experience for it
+  if(m.ally){ monsters = monsters.filter(x => x!==m); FX.puff(m.x, m.z); log('Поднятый скелет рассыпается.'); return; }
   S.kills++; if(m.mini) S.champs++; if(m.boss) S.bossKilled=true; log(msg, m.boss ? 'gold' : 'good'); SFX.p.kill(); monVoice(m,'die'); gainXp(m.xp);
   if(m.boss && S.nikita) nikitaSay('boss');
   monsters = monsters.filter(x => x!==m);
@@ -3444,14 +3446,18 @@ function updateAlly(m, dt){
       if(f && monsters.includes(f) && hyp(f.x-m.x, f.z-m.z) < m.r + f.r + .75){ const d = Math.max(1, Math.round(mitigate(m.atk*(.7 + rnd()*.3), f.def)));
         f.hp -= d; wake(f); FX.hit(f); FX.pop(f, '−' + d); FX.bump(m); hitSound(f); if(f.hp <= 0) killMonster(f, `Поднятый скелет добивает ${f.acc}.`); } }
     return; }
+  // it steps round traps and puddles like everyone else (it used to walk straight onto the spikes)
+  const mask = dangerMask(m);
+  if(escapeDanger(m, dt, mask, m.speed*.8)) return;
   let foe = null, fd = 9;
   for(const o of monsters){ if(o.ally || o === m) continue; const d = hyp(o.x-m.x, o.z-m.z); if(d < fd && (o.awake || d < 3) && los(m.x, m.z, o.x, o.z)){ fd = d; foe = o; } }
   if(foe){ const dx = foe.x-m.x, dz = foe.z-m.z; m.yaw = Math.atan2(dx, dz);
     if(fd <= m.r + foe.r + .45){ if(m.cd <= 0){ m.wind = .38; m.wtg = foe; m.atkKind = pickAtk(m.model); } }
-    else { moveEnt(m, dx/fd*m.speed*dt, dz/fd*m.speed*dt, m.r); m.moving = 1; }
+    else { const [tx, tz] = safeDir(m, dx/fd, dz/fd, mask, true); moveEnt(m, tx*m.speed*dt, tz*m.speed*dt, m.r); m.moving = 1; }
     return; }
   const pd = hyp(P.x-m.x, P.z-m.z);
-  if(pd > 2){ const dir = los(m.x, m.z, P.x, P.z) ? [(P.x-m.x)/pd, (P.z-m.z)/pd] : pathDir(m, 0); if(dir){ moveEnt(m, dir[0]*m.speed*dt, dir[1]*m.speed*dt, m.r); m.moving = 1; m.yaw = Math.atan2(dir[0], dir[1]); } }
+  if(pd > 2){ let dir = los(m.x, m.z, P.x, P.z) ? [(P.x-m.x)/pd, (P.z-m.z)/pd] : pathDir(m, mask);
+    if(dir){ dir = safeDir(m, dir[0], dir[1], mask, true); moveEnt(m, dir[0]*m.speed*dt, dir[1]*m.speed*dt, m.r); m.moving = 1; m.yaw = Math.atan2(dir[0], dir[1]); } }
 }
 // keep personal space from other creatures, the player and the companion
 function separate(m, C){
